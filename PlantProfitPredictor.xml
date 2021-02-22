@@ -1,6 +1,7 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
 	<Script file="SpellbookOverwrites.lua"/>
+	<Script file="PPPTables.lua"/>
 	<Script file="PlantProfitPredictor.lua"/>
 	<!--
 	<Script file="PaperDollOverwrites.lua"/>
@@ -58,6 +59,11 @@
 					<Anchor point="TOPLEFT" relativeTo="PPPLineTab1" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 				</Anchors>
 			</CheckButton>
+			<CheckButton name="PPPLineTab3" parent="PPPBaseFrame" inherits="PPPSkillLinetabTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PPPLineTab2" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
+				</Anchors>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -94,15 +100,31 @@
 		</Anchors>
 	</Button>
 	
-	<!-- the pigment button w/ tooltip -->
-	<Button name="PPPPigmentButton" virtual="true" inherits="PPPButtonTemplate">
+	<Button name="PPPSmallButton" virtual="true" inherits="PPPButtonTemplate">
 		<Size x="25" y="25"/>
+	</Button>
+	
+	<!-- the pigment button w/ tooltip -->
+	<Button name="PPPPigmentButton" virtual="true" inherits="PPPSmallButton">
 		<Layers>
 			<Layer name="OVERLAY">
 				<FontString name="$parentCount" inherits="GameFontNormal" text="0">
 					<Color r="1" g="1" b="1"/>
 					<Anchors>
 						<Anchor point="LEFT" relativePoint="RIGHT" x="3"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Button>
+	
+	<Button name="PPPAlchemyIngredient" virtual="true" inherits="PPPSmallButton" hidden="true">
+		<Layers>
+			<Layer name="OVERLAY">
+				<FontString name="$parentCount" inherits="GameFontNormal" text="0">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-7"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -123,7 +145,7 @@
 	</Button>
 	
 	<!-- the plant page's plant listings -->
-	<Frame name="PPPPlantDefault" virtual="true" toplevel="true" mouseEnabled="true">
+	<Frame name="PPPPlantDefault" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
 		<Size x="45" y="45"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -216,6 +238,57 @@
 			</Button>
 		</Frames>
 	</Button>
+	
+	<Frame name="PPPAlchemyCreation" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
+		<Size x="45" y="45"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Button name="$parentButton" inherits="PPPPlantButton"/>
+			
+			<Button name="$parentIngredientButton1" inherits="PPPAlchemyIngredient">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentButton" relativePoint="RIGHT" x="175"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentIngredientButton2" inherits="PPPAlchemyIngredient">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentIngredientButton1" relativePoint="RIGHT" x="15"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentIngredientButton3" inherits="PPPAlchemyIngredient">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentIngredientButton2" relativePoint="RIGHT" x="15"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentIngredientButton4" inherits="PPPAlchemyIngredient">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentIngredientButton3" relativePoint="RIGHT" x="15"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentIngredientButton5" inherits="PPPAlchemyIngredient">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentIngredientButton4" relativePoint="RIGHT" x="15"/>
+				</Anchors>
+			</Button>
+			<Button name="$parentIngredientButton6" inherits="PPPAlchemyIngredient">
+				<Anchors>
+					<Anchor point="LEFT" relativeTo="$parentIngredientButton5" relativePoint="RIGHT" x="15"/>
+				</Anchors>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer name="OVERLAY">
+				<FontString name="$parentName" inherits="GameFontNormal" text="$parentName">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="10"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 	
 	<!-- Template for each tab -->
 	<Frame name="PPPTabTemplate" virtual="true" hidden="true" setAllPoints="true">
@@ -335,6 +408,11 @@
 							</OnShow>
 						</Scripts>
 					</ScrollFrame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentAlchemyFrame" inherits="PPPTabTemplate">
+				<Frames>
+					<Frame name="$parentCreation1" inherits="PPPAlchemyCreation"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentTabs" inherits="PPPSidebarTemplate"/>

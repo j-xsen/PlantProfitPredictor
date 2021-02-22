@@ -1,8 +1,9 @@
 local currentTab = nil
 
 PPPLineTabs = {
-	{name="Plants",icon=136065,frames={"PPPBaseFramePlantFrame"},func="GotoPlantPage"},
-	{name="Milling History",icon=236229,frames={"PPPBaseFrameMillingFrame"},func="GotoMillingPage"},
+	{name="Plants",icon=136065,frames={"PPPBaseFramePlantFrame"},func="PPPGotoPlantPage"},
+	{name="Milling History",icon=236229,frames={"PPPBaseFrameMillingFrame"},func="PPPGotoMillingPage"},
+	{name="Alchemy",icon=136240,frames={"PPPBaseFrameAlchemyFrame"},func="PPPGotoAlchemyPage"},
 }
 
 function PPPLineTab_OnClick(self)
@@ -24,7 +25,7 @@ function PPPLineTab_OnClick(self)
 							page:Hide()
 						end
 					else
-						print("[PlantProfitPredictor.SpellbookOverwrites:27] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
+						print("[PlantProfitPredictor.SpellbookOverwrites:28] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
 					end
 				end
 			else
@@ -41,7 +42,7 @@ function PPPLineTab_OnClick(self)
 						-- show it
 						page:Show()
 					else
-						print("[PlantProfitPredictor.SpellbookOverwrites:44] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
+						print("[PlantProfitPredictor.SpellbookOverwrites:45] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
 					end
 				end
 			end

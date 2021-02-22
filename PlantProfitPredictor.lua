@@ -1,81 +1,10 @@
-PPPPlants = {
-	[168583] = {
-		name="Widowbloom",
-		tech_name="Widowbloom",
-		file=3610996,
-		pigments={
-			173056,175788,173057
-		},
-	},
-	[171315] = {
-		name="Nightshade",
-		tech_name="Nightshade",
-		file=3692438,
-		pigments={
-			173056,175788,173057
-		},
-	},
-	[168586] = {
-		name="Rising Glory",
-		tech_name="RisingGlory",
-		file=3613630,
-		pigments={
-			173056,175788,173057
-		},
-	},
-	[170554] = {
-		name="Vigil's Torch",
-		tech_name="VigilsTorch",
-		file=3387974,
-		pigments={
-			173056,175788,173057
-		},
-	},
-	[168589] = {
-		name="Marrowroot",
-		tech_name="Marrowroot",
-		file=3480675,
-		pigments={
-			173056,175788,173057
-		},
-	},
-	[169701] = {
-		name="Death Blossom",
-		tech_name="DeathBlossom",
-		file=3502461,
-		pigments={
-			173056,175788,173057
-		},
-	}
-}
-PPPPigments = {
-	[173057] = {
-		name="Luminous Pigment",
-		file=3716974,
-	},
-	[175788] = {
-		name="Tranquil Pigment",
-		file=3716977,
-	},
-	[173056] = {
-		name="Umbral Pigment",
-		file=3716978,
-	}
-}
-local MillingSpells = {
-	[51005] = true, -- normal milling
-	[311413] = 169701, -- mass death blossom
-	[311414] = 170554, -- mass vigil's torch
-	[311415] = 168583, -- mass widowbloom
-	[311416] = 168589, -- mass marrowroot
-	[311417] = 168586, -- mass rising glory
-	[311418] = 171315, -- mass nightshade
-}
-local ShadowlandsPlants = {168583,171315,168586,170554,168589,169701}
-local CurrentPlants = ShadowlandsPlants
+local CurrentPlants = PPPShadowlandsPlants
+local CurrentAlchemy = PPPShadowlandsAlchemy
 local MAX_NUMBER_MILLING_LIST = 12 -- max number of items displayed on the milling tab
 local MAX_NUMBER_PLANTS = 6 -- how many plants can be shown on the plant page at once
 local MAX_NUMBER_PIGMENTS = 3 -- how many pigments can be shown at once
+local MAX_NUMBER_ALCHEMY_CREATIONS = 1 -- how many alchemy creations can we show per page
+local MAX_NUMBER_ALCHEMY_INGREDIENTS = 6 -- how many alchemy ingredients can we show
 
 local function FindXsInBag(list)
 	local total = {}
@@ -236,12 +165,55 @@ local function FinishedMillLooting()
 	end
 end
 
-function GotoPlantPage()
+local function UpdateAlchemyPage()
+	for i=1,#CurrentAlchemy do
+		if i<= MAX_NUMBER_ALCHEMY_CREATIONS then
+			local frame_name = "PPPBaseFrameAlchemyFrameCreation" .. i
+			local frame = _G[frame_name]
+			if frame then
+				frame:Show()
+				_G[frame_name .. "Button"]:SetNormalTexture(PPPAlchemyCreations[CurrentAlchemy[i]].file)
+				_G[frame_name .. "Button"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
+				_G[frame_name .. "Name"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
+				
+				-- run through each ingredient
+				local ingredient_number = 1
+				for k,v in pairs(PPPAlchemyCreations[CurrentAlchemy[i]].ingredients) do
+					if ingredient_number <= MAX_NUMBER_ALCHEMY_INGREDIENTS then
+						local ingredient_frame_name = frame_name .. "IngredientButton" .. ingredient_number
+						ingredient_frame = _G[ingredient_frame_name]
+						if ingredient_frame then
+							ingredient_frame:Show()
+							ingredient_frame:SetNormalTexture(PPPPlants[k].file)
+							ingredient_frame:SetText(PPPPlants[k].name)
+							_G[ingredient_frame_name .. "Count"]:SetText(v)
+						else
+							print("[PlantProfitPredictor] Could not locate frame " .. frame_name .. "IngredientButton" .. ingredient_number)
+						end
+						ingredient_number = ingredient_number + 1
+					else
+						print("[PlantProfitPredictor] TOO MANY INGREDIENTS!!!")
+					end
+				end
+			else
+				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)
+			end
+		else
+			print("[PlantProfitPredictor] NEED NEW PAGE!!!")
+		end
+	end
+end
+
+function PPPGotoPlantPage()
 	UpdatePlantCountFrame()
 end
-function GotoMillingPage()
+function PPPGotoMillingPage()
 	-- update information when going to milling page
 	PPPScrollBarUpdate()
+end
+function PPPGotoAlchemyPage()
+	-- stuff to do when going to alchemy page
+	UpdateAlchemyPage()
 end
 
 local function ToggleFrame()
@@ -303,11 +275,11 @@ function PPPEventHandler(self, event, arg1, arg2, arg3)
 			milled_waited_for_delay_yet = false
 			current_milling_info = {id=nil, output={},mass_milled=false}
 			currently_milling = true
-		elseif MillingSpells[arg3] ~= nil then
+		elseif PPPMillingSpells[arg3] ~= nil then
 			milled_waited_for_delay_yet = true
-			current_milling_info = {id=MillingSpells[arg3], output={},mass_milled=true}
-			for i=1,#PPPPlants[MillingSpells[arg3]].pigments do
-				current_milling_info.output[v.pigments[i]] = 0
+			current_milling_info = {id=PPPMillingSpells[arg3], output={},mass_milled=true}
+			for i=1,#PPPPlants[PPPMillingSpells[arg3]].pigments do
+				current_milling_info.output[PPPPlants[PPPMillingSpells[arg3]].pigments[i]] = 0
 			end
 			currently_milling = true
 		end
