@@ -1,0 +1,8 @@
+## Interface: 90002
+## Title : Plant Profit Predictor
+## Notes: Make sure you're efficiently gaining profits.
+## Author: Jaxsen
+## SavedVariables: PPPMillingHistory
+
+PlantProfitPredictor.xml
+PlantProfitPredictor.lua
