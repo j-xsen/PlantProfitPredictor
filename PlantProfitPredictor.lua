@@ -166,27 +166,34 @@ local function FinishedMillLooting()
 end
 
 local function UpdateAlchemyPage()
+	UpdateInventory()
 	for i=1,#CurrentAlchemy do
 		if i<= MAX_NUMBER_ALCHEMY_CREATIONS then
 			local frame_name = "PPPBaseFrameAlchemyFrameCreation" .. i
 			local frame = _G[frame_name]
 			if frame then
 				frame:Show()
-				_G[frame_name .. "Button"]:SetNormalTexture(PPPAlchemyCreations[CurrentAlchemy[i]].file)
-				_G[frame_name .. "Button"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
+				_G[frame_name .. "PlantButton"]:SetNormalTexture(PPPAlchemyCreations[CurrentAlchemy[i]].file)
+				_G[frame_name .. "PlantButton"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
 				_G[frame_name .. "Name"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
 				
 				-- run through each ingredient
 				local ingredient_number = 1
+				local max_can_create = 0
 				for k,v in pairs(PPPAlchemyCreations[CurrentAlchemy[i]].ingredients) do
+					local can_create_with_this_ingredient = math.floor(current_bag[k] / v)
+					if ingredient_number == 1 or can_create_with_this_ingredient < max_can_create then
+						max_can_create = can_create_with_this_ingredient
+					end
 					if ingredient_number <= MAX_NUMBER_ALCHEMY_INGREDIENTS then
 						local ingredient_frame_name = frame_name .. "IngredientButton" .. ingredient_number
 						ingredient_frame = _G[ingredient_frame_name]
 						if ingredient_frame then
 							ingredient_frame:Show()
 							ingredient_frame:SetNormalTexture(PPPPlants[k].file)
-							ingredient_frame:SetText(PPPPlants[k].name)
+							ingredient_frame:SetText(PPPPlants[k].name .. "\n|cffffffffTotal in bags: " .. current_bag[k] .. "|r")
 							_G[ingredient_frame_name .. "Count"]:SetText(v)
+							_G[ingredient_frame_name .. "TimesCanCreate"]:SetText(can_create_with_this_ingredient)
 						else
 							print("[PlantProfitPredictor] Could not locate frame " .. frame_name .. "IngredientButton" .. ingredient_number)
 						end
@@ -195,6 +202,7 @@ local function UpdateAlchemyPage()
 						print("[PlantProfitPredictor] TOO MANY INGREDIENTS!!!")
 					end
 				end
+				can_create_frame = _G[frame_name .. "TimesCanCreate"]:SetText("x" .. max_can_create)
 			else
 				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)
 			end

@@ -124,7 +124,13 @@
 				<FontString name="$parentCount" inherits="GameFontNormal" text="0">
 					<Color r="1" g="1" b="1"/>
 					<Anchors>
-						<Anchor point="BOTTOMLEFT" relativePoint="BOTTOMRIGHT" x="-7"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentTimesCanCreate" inherits="GameFontNormal" text="0">
+					<Color r="1" g="1" b="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="TOPLEFT"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -245,11 +251,16 @@
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 		</Anchors>
 		<Frames>
-			<Button name="$parentButton" inherits="PPPPlantButton"/>
+			<Button name="$parentPlantButton" inherits="PPPPlantButton"/>
+			<Button name="$parentArrow" inherits="PPPArrowButton">
+				<Anchors>
+					<Anchor point="LEFT" x="225" />
+				</Anchors>
+			</Button>
 			
 			<Button name="$parentIngredientButton1" inherits="PPPAlchemyIngredient">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentButton" relativePoint="RIGHT" x="175"/>
+					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentIngredientButton2" inherits="PPPAlchemyIngredient">
@@ -280,6 +291,12 @@
 		</Frames>
 		<Layers>
 			<Layer name="OVERLAY">
+				<FontString name="$parentTimesCanCreate" inherits="GameFontNormal" text="x0">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="5" RelativeTo="$parentArrow"/>
+					</Anchors>
+				</FontString>
 				<FontString name="$parentName" inherits="GameFontNormal" text="$parentName">
 					<Color r="1" g="1" b="1"/>
 					<Anchors>
