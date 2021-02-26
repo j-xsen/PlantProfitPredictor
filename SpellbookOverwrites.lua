@@ -1,16 +1,78 @@
+local MAX_NUMBER_INNER_TABS = 2
+
 local currentTab = nil
 
 PPPLineTabs = {
-	{name="Plants",icon=136065,frames={"PPPBaseFramePlantFrame"},func="PPPGotoPlantPage"},
-	{name="Milling History",icon=236229,frames={"PPPBaseFrameMillingFrame"},func="PPPGotoMillingPage"},
-	{name="Alchemy",icon=136240,frames={"PPPBaseFrameAlchemyFrame"},func="PPPGotoAlchemyPage"},
+	{name="Milling",icon=236229,frames={"PPPBaseFrameMillingFrame"},base_frame="PPPBaseFrameMillingFrame",func="PPPGotoPlantPage",
+	 inner_tabs={{frame="Main",text="Predictions"},{frame="Log",text="Log"}}},
+	--{name="Milling History",icon=236229,frames={"PPPBaseFrameMillingLogFrame"},func="PPPGotoMillingPage"},
+	{name="Alchemy",icon=136240,frames={"PPPBaseFrameAlchemyFrame"},base_frame="PPPBaseFrameAlchemyFrame",func="PPPGotoAlchemyPage",
+	 inner_tabs={{frame="Main",text="Creations"}}},
 }
+
+local current_inner_tab = nil
+local function ChangeInnerTab(new_page)
+	new_page_id = new_page:GetID()
+	if not new_page_id then
+		print("[PlantProfitPredictor] nil new_page_id!")
+	end
+	new_page:Disable()
+	if current_inner_tab then
+		local tab_button = _G["PPPBaseFrameInnerTabButton" .. current_inner_tab]
+		PanelTemplates_DeselectTab(tab_button)
+		tab_button:Enable()
+	end
+	PanelTemplates_SelectTab(new_page)
+	if current_inner_tab ~= new_page_id then
+		if PPPLineTabs[currentTab].inner_tabs[current_inner_tab] then
+			old_inner_tab = _G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[current_inner_tab].frame]
+			if old_inner_tab then
+				_G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[current_inner_tab].frame]:Hide()
+			end
+		end
+		if PPPLineTabs[currentTab].inner_tabs[new_page_id] then
+			_G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[new_page_id].frame]:Show()
+		else
+			print("[PlantProfitPredictor] Invalid inner_tab ID " .. new_page_id .. " for frame " .. PPPLineTabs[currentTab].base_frame)
+		end
+	end
+	current_inner_tab = new_page_id
+end
+
+local function ResetTabs()
+	for i=1,MAX_NUMBER_INNER_TABS do
+		local current_tab = _G["PPPBaseFrameInnerTabButton" .. i]
+		PanelTemplates_DeselectTab(current_tab)
+		
+		if PPPLineTabs[currentTab].inner_tabs[i] then
+			current_tab:SetText(PPPLineTabs[currentTab].inner_tabs[i].text)
+			current_tab:Show()
+		else
+			current_tab:Hide()
+		end
+	end
+	ChangeInnerTab(_G["PPPBaseFrameInnerTabButton1"])
+end
+
+function PPPTabButton_OnClick(self)
+	--ToggleSpellBook(self.bookType);
+	ChangeInnerTab(self)
+end
 
 function PPPLineTab_OnClick(self)
 	local id = self:GetID()
 	if ( currrentTab ~= id ) then
 		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN)
+		
+		-- hide all inner tabs
+		if currentTab then
+			for i=1,#PPPLineTabs[currentTab].inner_tabs do
+				_G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[i].frame]:Hide()
+			end
+		end
+		
 		currentTab = id
+		current_inner_tab = nil
 		
 		for i=1,#PPPLineTabs do
 			if i ~= id then
@@ -25,7 +87,7 @@ function PPPLineTab_OnClick(self)
 							page:Hide()
 						end
 					else
-						print("[PlantProfitPredictor.SpellbookOverwrites:28] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
+						print("[PlantProfitPredictor.SpellbookOverwrites] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
 					end
 				end
 			else
@@ -42,7 +104,7 @@ function PPPLineTab_OnClick(self)
 						-- show it
 						page:Show()
 					else
-						print("[PlantProfitPredictor.SpellbookOverwrites:45] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
+						print("[PlantProfitPredictor.SpellbookOverwrites] Could not find page " .. PPPLineTabs[i].frames[j] .. " (" .. i .. "." .. j .. ")!")
 					end
 				end
 			end
@@ -58,4 +120,6 @@ function PPPLineTab_OnClick(self)
 			tabFlash:Hide();
 		end
 	end
+	
+	ResetTabs()
 end

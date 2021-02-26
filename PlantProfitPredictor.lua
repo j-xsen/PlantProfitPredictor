@@ -74,37 +74,37 @@ local function UpdatePlantCountFrame()
 	for i=1,MAX_NUMBER_PLANTS do
 		-- hide pigments too in case they're not needed
 		for j=1,MAX_NUMBER_PIGMENTS do
-			_G["PPPBaseFramePlantFramePlant" .. i .. "PigmentButton" .. j]:Hide()
+			_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "PigmentButton" .. j]:Hide()
 		end
-		_G["PPPBaseFramePlantFramePlant" .. i]:Hide()
+		_G["PPPBaseFrameMillingFrameMainPlant" .. i]:Hide()
 	end
 	
 	-- update plant count
 	for i=1,#CurrentPlants do
 		if i <= MAX_NUMBER_PLANTS then
-			local frame_name = "PPPBaseFramePlantFramePlant" .. i .. "Name"
+			local frame_name = "PPPBaseFrameMillingFrameMainPlant" .. i .. "Name"
 			frame = _G[frame_name]
 			if frame then
 				local possible_millings = math.floor(current_bag[CurrentPlants[i]] / 5)
-				_G["PPPBaseFramePlantFramePlant" .. i]:Show()
-				_G["PPPBaseFramePlantFramePlant" .. i .. "PlantButton"]:SetNormalTexture(PPPPlants[CurrentPlants[i]].file)
-				_G["PPPBaseFramePlantFramePlant" .. i .. "PlantButton"]:SetText(PPPPlants[CurrentPlants[i]].name)
-				_G["PPPBaseFramePlantFramePlant" .. i .. "TimesCanMill"]:SetText("x" .. possible_millings)
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i]:Show()
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "PlantButton"]:SetNormalTexture(PPPPlants[CurrentPlants[i]].file)
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "PlantButton"]:SetText(PPPPlants[CurrentPlants[i]].name)
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "TimesCanMill"]:SetText("x" .. possible_millings)
 				frame:SetText(PPPPlants[CurrentPlants[i]].name .. ": " .. current_bag[CurrentPlants[i]])
 				
 				-- clear arrow text
-				_G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:SetText("|cffffff00Per milling of 5 plants:|r|cffffffff")
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText("|cffffff00Per milling of 5 plants:|r|cffffffff")
 				
 				-- set texture and text of pigment buttons
 				for j=1,#PPPPlants[CurrentPlants[i]].pigments do
 					if j<=MAX_NUMBER_PIGMENTS then
-						local current_text = _G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:GetText()
+						local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
 						if current_text ~= nil then
-							_G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:SetText(current_text .. "\n" .. PPPPigments[PPPPlants[CurrentPlants[i]].pigments[j]].name)
+							_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. "\n" .. PPPPigments[PPPPlants[CurrentPlants[i]].pigments[j]].name)
 						else
-							_G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:SetText(PPPPigments[PPPPlants[CurrentPlants[i]].pigments[j]].name)
+							_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(PPPPigments[PPPPlants[CurrentPlants[i]].pigments[j]].name)
 						end
-						pigment_frame_name = "PPPBaseFramePlantFramePlant" .. i .. "PigmentButton" .. j
+						pigment_frame_name = "PPPBaseFrameMillingFrameMainPlant" .. i .. "PigmentButton" .. j
 						pigment_frame = _G[pigment_frame_name]
 						if pigment_frame then
 							pigment_frame:Show()
@@ -126,13 +126,13 @@ local function UpdatePlantCountFrame()
 									end
 								end
 							end
-							local current_text = _G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:GetText()
+							local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
 							if total_milled ~= 0 then
 								local estimation_per_milling = (total_milled/times_milled)
 								_G[pigment_frame_name .. "Count"]:SetText(string.format("%.1f",estimation_per_milling*possible_millings))
-								_G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:SetText(current_text .. ": " .. string.format("%.1f",estimation_per_milling))
+								_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. ": " .. string.format("%.1f",estimation_per_milling))
 							else
-								_G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:SetText(current_text .. ": 0")
+								_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. ": 0")
 								_G[pigment_frame_name .. "Count"]:SetText("0")
 							end
 						else
@@ -142,8 +142,8 @@ local function UpdatePlantCountFrame()
 						print("[PlantProfitPredictor] Too many pigments!")
 					end
 				end
-				local current_text = _G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:GetText()
-				_G["PPPBaseFramePlantFramePlant" .. i .. "Arrow"]:SetText(current_text .. "|r")
+				local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. "|r")
 			else
 				print("[PlantProfitPredictor.lua:193] Could not locate frame " .. frame_name)
 			end
@@ -159,7 +159,7 @@ local function FinishedMillLooting()
 		currently_milling = false
 		current_milling_info = {}
 		PPPScrollBarUpdate()
-		if PPPBaseFramePlantFrame:IsVisible() then
+		if PPPBaseFrameMillingFrame:IsVisible() then
 			UpdatePlantCountFrame()
 		end
 	end
@@ -169,7 +169,7 @@ local function UpdateAlchemyPage()
 	UpdateInventory()
 	for i=1,#CurrentAlchemy do
 		if i<= MAX_NUMBER_ALCHEMY_CREATIONS then
-			local frame_name = "PPPBaseFrameAlchemyFrameCreation" .. i
+			local frame_name = "PPPBaseFrameAlchemyFrameMainCreation" .. i
 			local frame = _G[frame_name]
 			if frame then
 				frame:Show()
@@ -235,34 +235,34 @@ end
 
 function PPPScrollBarUpdate()
 	local line, lineplusoffset
-	FauxScrollFrame_Update(PPPBaseFrameMillingFrameScrollFrame,#PPPMillingHistory,12,25) -- (frame, total number, number shown, height)
+	FauxScrollFrame_Update(PPPBaseFrameMillingFrameLogScrollFrame,#PPPMillingHistory,12,25) -- (frame, total number, number shown, height)
 	for line=1,12 do
-		lineplusoffset = line + FauxScrollFrame_GetOffset(PPPBaseFrameMillingFrameScrollFrame)
+		lineplusoffset = line + FauxScrollFrame_GetOffset(PPPBaseFrameMillingFrameLogScrollFrame)
 		if lineplusoffset <= #PPPMillingHistory then
 			local plant_name = nil
 			local plant_file, plant_id
 			for k,v in pairs(PPPPlants) do
 				if k == PPPMillingHistory[lineplusoffset].id then
-					_G["PPPBaseFrameMillingFrameEntry" .. line .. "PlantButton"]:SetText(v.name)
-					_G["PPPBaseFrameMillingFrameEntry" .. line .. "PlantButton"]:SetNormalTexture(v.file)
+					_G["PPPBaseFrameMillingFrameLogEntry" .. line .. "PlantButton"]:SetText(v.name)
+					_G["PPPBaseFrameMillingFrameLogEntry" .. line .. "PlantButton"]:SetNormalTexture(v.file)
 					if PPPMillingHistory[lineplusoffset].mass_milled then
-						_G["PPPBaseFrameMillingFrameEntry" .. line .. "Name"]:SetText(v.name .. " x20")
+						_G["PPPBaseFrameMillingFrameLogEntry" .. line .. "Name"]:SetText(v.name .. " x20")
 					else
-						_G["PPPBaseFrameMillingFrameEntry" .. line .. "Name"]:SetText(v.name .. " x5")
+						_G["PPPBaseFrameMillingFrameLogEntry" .. line .. "Name"]:SetText(v.name .. " x5")
 					end
 				end
 			end
 			
 			local pigment_int = 1
 			for k,v in pairs(PPPMillingHistory[lineplusoffset].output) do
-				_G["PPPBaseFrameMillingFrameEntry" .. line .. "PigmentButton" .. pigment_int .. "Count"]:SetText(v)
-				_G["PPPBaseFrameMillingFrameEntry" .. line .. "PigmentButton" .. pigment_int]:SetNormalTexture(PPPPigments[k].file)
-				_G["PPPBaseFrameMillingFrameEntry" .. line .. "PigmentButton" .. pigment_int]:SetText(PPPPigments[k].name)
+				_G["PPPBaseFrameMillingFrameLogEntry" .. line .. "PigmentButton" .. pigment_int .. "Count"]:SetText(v)
+				_G["PPPBaseFrameMillingFrameLogEntry" .. line .. "PigmentButton" .. pigment_int]:SetNormalTexture(PPPPigments[k].file)
+				_G["PPPBaseFrameMillingFrameLogEntry" .. line .. "PigmentButton" .. pigment_int]:SetText(PPPPigments[k].name)
 				pigment_int = pigment_int + 1
 			end
-			_G["PPPBaseFrameMillingFrameEntry" .. line]:Show()
+			_G["PPPBaseFrameMillingFrameLogEntry" .. line]:Show()
 		else
-			_G["PPPBaseFrameMillingFrameEntry" .. line]:Hide()
+			_G["PPPBaseFrameMillingFrameLogEntry" .. line]:Hide()
 		end
 	end
 end

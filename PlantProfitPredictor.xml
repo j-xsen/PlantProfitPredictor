@@ -31,6 +31,24 @@
 			</OnClick>
 		</Scripts>
 	</CheckButton>
+	<Button name="PPPTabButtonTemplate" virtual="true" inherits="SpellBookFrameTabButtonTemplate">
+		<Anchors>
+			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="1"/>
+		</Anchors>
+		<Scripts>
+			<OnClick>
+				PPPTabButton_OnClick(self, button, down);
+			</OnClick>
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+				if self:GetText() ~= nil then
+					GameTooltip:AddLine(self:GetText())
+				else
+					GameTooltip:AddLine("UNKNOWN")
+				end
+			</OnEnter>
+		</Scripts>
+	</Button>
 	<Frame name="PPPSidebarTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="PPPBaseFrame" relativePoint="TOPLEFT"/>
@@ -57,11 +75,6 @@
 			<CheckButton name="PPPLineTab2" parent="PPPBaseFrame" inherits="PPPSkillLinetabTemplate" id="2">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PPPLineTab1" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
-				</Anchors>
-			</CheckButton>
-			<CheckButton name="PPPLineTab3" parent="PPPBaseFrame" inherits="PPPSkillLinetabTemplate" id="3">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="PPPLineTab2" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
@@ -150,8 +163,8 @@
 		</Scripts>
 	</Button>
 	
-	<!-- the plant page's plant listings -->
-	<Frame name="PPPPlantDefault" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
+	<!-- the milling page's plant listings / expected milling output -->
+	<Frame name="PPPMillingDefault" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
 		<Size x="45" y="45"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -195,8 +208,8 @@
 		</Layers>
 	</Frame>
 	
-	<!-- the milling page's plant listings -->
-	<Button name="PPPPlantMilling" virtual="true" toplevel="true" mouseEnabled="true">
+	<!-- the milling log page's listings -->
+	<Button name="PPPMillingLogTemplate" virtual="true" toplevel="true" mouseEnabled="true">
 		<Size x="25" y="25"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
@@ -315,6 +328,8 @@
 		</Anchors>
 	</Frame>
 	
+	<Frame name="PPPInnerTabTemplate" virtual="true" hidden="true" setAllPoints="true"/>
+	
 	<!-- the actual base tab -->
 	<Frame name="PPPBaseFrame" parent="UIParent" hidden="false" toplevel="true"  movable="true" frameStrata="MEDIUM" inherits="BasicFrameTemplate"
 		   dontSavePosition="true">
@@ -323,120 +338,134 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
-			<Frame name="$parentPlantFrame" inherits="PPPTabTemplate">
-				<Frames>
-					<Frame name="$parentPlant1" inherits="PPPPlantDefault"/>
-					<Frame name="$parentPlant2" inherits="PPPPlantDefault">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlant1" relativePoint="BOTTOMLEFT" y="-21"/>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentPlant3" inherits="PPPPlantDefault">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlant2" relativePoint="BOTTOMLEFT" y="-21"/>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentPlant4" inherits="PPPPlantDefault">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlant3" relativePoint="BOTTOMLEFT" y="-21"/>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentPlant5" inherits="PPPPlantDefault">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlant4" relativePoint="BOTTOMLEFT" y="-21"/>
-						</Anchors>
-					</Frame>
-					<Frame name="$parentPlant6" inherits="PPPPlantDefault">
-						<Anchors>
-							<Anchor point="TOPLEFT" relativeTo="$parentPlant5" relativePoint="BOTTOMLEFT" y="-21"/>
-						</Anchors>
-					</Frame>
-				</Frames>
-			</Frame>
+			<Button name="$parentInnerTabButton1" inherits="PPPTabButtonTemplate" hidden="false" id="1"/>
+			<Button name="$parentInnerTabButton2" inherits="PPPTabButtonTemplate" hidden="false" id="2">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentInnerTabButton1" relativePoint="TOPRIGHT"/>
+				</Anchors>
+			</Button>
 			<Frame name="$parentMillingFrame" inherits="PPPTabTemplate">
 				<Frames>
-					<Frame name="$parentEntry1" inherits="PPPPlantMilling" id="1"/>
-					<Button name="$parentEntry2" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry1" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry3" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry2" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry4" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry3" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry5" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry4" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry6" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry5" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry7" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry6" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry8" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry7" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry9" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry8" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry10" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry9" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry11" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry10" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<Button name="$parentEntry12" inherits="PPPPlantMilling" id="1">
-						<Anchors>
-							<Anchor relativeTo="$parentEntry11" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-						</Anchors>
-					</Button>
-					<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" setAllPoints="true">
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-							<Anchor point="BOTTOMRIGHT" x="-30" y="0"/>
-						</Anchors>
-						<Scripts>
-							<OnVerticalScroll>
-								FauxScrollFrame_OnVerticalScroll(self, offset, 25, PPPScrollBarUpdate)
-							</OnVerticalScroll>
-							<OnShow>
-								PPPScrollBarUpdate()
-							</OnShow>
-						</Scripts>
-					</ScrollFrame>
+					<Frame name="$parentMain" inherits="PPPInnerTabTemplate" id="1">
+						<Frames>
+							<Frame name="$parentPlant1" inherits="PPPMillingDefault"/>
+							<Frame name="$parentPlant2" inherits="PPPMillingDefault">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentPlant1" relativePoint="BOTTOMLEFT" y="-21"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlant3" inherits="PPPMillingDefault">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentPlant2" relativePoint="BOTTOMLEFT" y="-21"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlant4" inherits="PPPMillingDefault">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentPlant3" relativePoint="BOTTOMLEFT" y="-21"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlant5" inherits="PPPMillingDefault">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentPlant4" relativePoint="BOTTOMLEFT" y="-21"/>
+								</Anchors>
+							</Frame>
+							<Frame name="$parentPlant6" inherits="PPPMillingDefault">
+								<Anchors>
+									<Anchor point="TOPLEFT" relativeTo="$parentPlant5" relativePoint="BOTTOMLEFT" y="-21"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+					</Frame>
+					<Frame name="$parentLog" inherits="PPPInnerTabTemplate" id="2">
+						<Frames>
+							<Frame name="$parentEntry1" inherits="PPPMillingLogTemplate" id="1"/>
+							<Button name="$parentEntry2" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry1" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry3" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry2" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry4" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry3" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry5" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry4" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry6" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry5" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry7" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry6" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry8" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry7" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry9" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry8" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry10" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry9" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry11" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry10" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<Button name="$parentEntry12" inherits="PPPMillingLogTemplate" id="1">
+								<Anchors>
+									<Anchor relativeTo="$parentEntry11" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
+								</Anchors>
+							</Button>
+							<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" setAllPoints="true">
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+									<Anchor point="BOTTOMRIGHT" x="-30" y="0"/>
+								</Anchors>
+								<Scripts>
+									<OnVerticalScroll>
+										FauxScrollFrame_OnVerticalScroll(self, offset, 25, PPPScrollBarUpdate)
+									</OnVerticalScroll>
+									<OnShow>
+										PPPScrollBarUpdate()
+									</OnShow>
+								</Scripts>
+							</ScrollFrame>
+						</Frames>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame name="$parentAlchemyFrame" inherits="PPPTabTemplate">
 				<Frames>
-					<Frame name="$parentCreation1" inherits="PPPAlchemyCreation"/>
+					<Frame name="$parentMain" inherits="PPPInnerTabTemplate">
+						<Frames>
+							<Frame name="$parentCreation1" inherits="PPPAlchemyCreation"/>
+						</Frames>
+					</Frame>
 				</Frames>
 			</Frame>
 			<Frame name="$parentTabs" inherits="PPPSidebarTemplate"/>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PlantProfitPredictor_OnLoad();
+				PlantProfitPredictor_OnLoad()
 			</OnLoad>
 			<OnShow>
 				PlaySound(844)
