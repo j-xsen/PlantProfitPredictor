@@ -77,10 +77,15 @@
 					<Anchor point="TOPLEFT" relativeTo="PPPLineTab1" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 				</Anchors>
 			</CheckButton>
+			<CheckButton name="PPPLineTab3" parent="PPPBaseFrame" inherits="PPPSkillLinetabTemplate" id="3">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PPPLineTab2" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
+				</Anchors>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
-				PPPLineTab_OnClick(_G["PPPLineTab1"]);
+				PPPLineTab_OnClick(PPPLineTab1);
 			</OnLoad>
 		</Scripts>
 	</Frame>
@@ -330,6 +335,61 @@
 	
 	<Frame name="PPPInnerTabTemplate" virtual="true" hidden="true" setAllPoints="true"/>
 	
+	<!-- not really much of a template... kind of just the whole thing -->
+	<Frame name="PPPDebugFrameTemplate" virtual="true" inherits="PPPInnerTabTemplate">
+		<Frames>
+			<Button name="$parentReloadAHData" inherits="PPPButtonTemplate" text="Reload AH Data">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-7"/>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						self:SetNormalTexture(135860)
+					</OnLoad>
+					<OnClick>
+						PPPDebugButtonScanNewAHList()
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer name="OVERLAY">
+				<FontString name="$parentLastAHScanTime" inherits="GameFontNormal" text="Last Auction House scan: ">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentSavedItemsCount" inherits="GameFontNormal" text="Number of items stored in PPPAuctionHistory: ">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentLastAHScanTime"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentLastAHScanCount" inherits="GameFontNormal" text="Number of replicate items stored: ">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentSavedItemsCount"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentAHItemsChecked" inherits="GameFontNormal" text="Items checked for on the AH: ">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="-10" relativeTo="$parentLastAHScanCount"/>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentAHItemsFound" inherits="GameFontNormal" text="Items found on the AH: ">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentAHItemsChecked"/>
+						<Anchor point="RIGHT" relativeTo="$parent" x="-25"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<!-- the actual base tab -->
 	<Frame name="PPPBaseFrame" parent="UIParent" hidden="false" toplevel="true"  movable="true" frameStrata="MEDIUM" inherits="BasicFrameTemplate"
 		   dontSavePosition="true">
@@ -457,8 +517,34 @@
 					<Frame name="$parentMain" inherits="PPPInnerTabTemplate">
 						<Frames>
 							<Frame name="$parentCreation1" inherits="PPPAlchemyCreation"/>
+							<Frame name="$parentCreation2" inherits="PPPAlchemyCreation">
+								<Anchors>
+									<Anchor relativeTo="$parentCreation1" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
+								</Anchors>
+								<Layers>
+									<Layer name="OVERLAY">
+										<Texture name="$parentStripe">
+											<Anchors>
+												<Anchor point="TOPLEFT" x="-3" y="3"/>
+												<Anchor point="BOTTOMRIGHT" x="443" y="-35"/>
+											</Anchors>
+											<Color a=".08" r="1" g="1" b="1"/>
+										</Texture>
+									</Layer>
+								</Layers>
+							</Frame>
+							<Frame name="$parentCreation3" inherits="PPPAlchemyCreation">
+								<Anchors>
+									<Anchor relativeTo="$parentCreation2" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
+								</Anchors>
+							</Frame>
 						</Frames>
 					</Frame>
+				</Frames>
+			</Frame>
+			<Frame name="$parentDebugFrame" inherits="PPPTabTemplate">
+				<Frames>
+					<Frame name="$parentMain" inherits="PPPDebugFrameTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentTabs" inherits="PPPSidebarTemplate"/>

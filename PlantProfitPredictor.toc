@@ -2,7 +2,7 @@
 ## Title : Plant Profit Predictor
 ## Notes: Make sure you're efficiently gaining profits.
 ## Author: Jaxsen
-## SavedVariables: PPPMillingHistory
+## SavedVariables: PPPMillingHistory, PPPAuctionHistory
 
 PlantProfitPredictor.xml
 PlantProfitPredictor.lua

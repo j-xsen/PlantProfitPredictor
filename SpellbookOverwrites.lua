@@ -8,6 +8,8 @@ PPPLineTabs = {
 	--{name="Milling History",icon=236229,frames={"PPPBaseFrameMillingLogFrame"},func="PPPGotoMillingPage"},
 	{name="Alchemy",icon=136240,frames={"PPPBaseFrameAlchemyFrame"},base_frame="PPPBaseFrameAlchemyFrame",func="PPPGotoAlchemyPage",
 	 inner_tabs={{frame="Main",text="Creations"}}},
+	{name="Debug",icon=136243,frames={"PPPBaseFrameDebugFrame"},base_frame="PPPBaseFrameDebugFrame",func="PPPGotoDebugPage",
+	 inner_tabs={{frame="Main",text="Debug"}}},
 }
 
 local current_inner_tab = nil
@@ -51,7 +53,7 @@ local function ResetTabs()
 			current_tab:Hide()
 		end
 	end
-	ChangeInnerTab(_G["PPPBaseFrameInnerTabButton1"])
+	current_inner_tab = nil
 end
 
 function PPPTabButton_OnClick(self)
@@ -59,6 +61,7 @@ function PPPTabButton_OnClick(self)
 	ChangeInnerTab(self)
 end
 
+local saved_position = {} -- saves what inner tab of a tab was last used
 function PPPLineTab_OnClick(self)
 	local id = self:GetID()
 	if ( currrentTab ~= id ) then
@@ -66,13 +69,13 @@ function PPPLineTab_OnClick(self)
 		
 		-- hide all inner tabs
 		if currentTab then
+			saved_position[currentTab] = current_inner_tab
 			for i=1,#PPPLineTabs[currentTab].inner_tabs do
 				_G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[i].frame]:Hide()
 			end
 		end
 		
 		currentTab = id
-		current_inner_tab = nil
 		
 		for i=1,#PPPLineTabs do
 			if i ~= id then
@@ -122,4 +125,9 @@ function PPPLineTab_OnClick(self)
 	end
 	
 	ResetTabs()
+	if saved_position[currentTab] then
+		ChangeInnerTab(_G["PPPBaseFrameInnerTabButton" .. saved_position[currentTab]])
+	else
+		ChangeInnerTab(PPPBaseFrameInnerTabButton1)
+	end
 end

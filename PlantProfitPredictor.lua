@@ -3,8 +3,19 @@ local CurrentAlchemy = PPPShadowlandsAlchemy
 local MAX_NUMBER_MILLING_LIST = 12 -- max number of items displayed on the milling tab
 local MAX_NUMBER_PLANTS = 6 -- how many plants can be shown on the plant page at once
 local MAX_NUMBER_PIGMENTS = 3 -- how many pigments can be shown at once
-local MAX_NUMBER_ALCHEMY_CREATIONS = 1 -- how many alchemy creations can we show per page
+local MAX_NUMBER_ALCHEMY_CREATIONS = 3 -- how many alchemy creations can we show per page
 local MAX_NUMBER_ALCHEMY_INGREDIENTS = 6 -- how many alchemy ingredients can we show
+
+local list_of_ah_items = {}
+for k,v in pairs(PPPPlants) do
+	list_of_ah_items[k]=true
+end
+for k,v in pairs(PPPPigments) do
+	list_of_ah_items[k]=true
+end
+for k,v in pairs(PPPAlchemyCreations) do
+	list_of_ah_items[k]=true
+end
 
 local function FindXsInBag(list)
 	local total = {}
@@ -31,7 +42,7 @@ local last_bag = {}
 local current_bag = {}
 local function UpdateInventory()
 	last_bag = current_bag
-	list_of_items = {}
+	local list_of_items = {}
 	for k,v in pairs(PPPPlants) do
 		list_of_items[k] = 0
 	end
@@ -199,7 +210,7 @@ local function UpdateAlchemyPage()
 						end
 						ingredient_number = ingredient_number + 1
 					else
-						print("[PlantProfitPredictor] TOO MANY INGREDIENTS!!!")
+						print("[PlantProfitPredictor] I'm not equipped to handle that many ingredients!")
 					end
 				end
 				can_create_frame = _G[frame_name .. "TimesCanCreate"]:SetText("x" .. max_can_create)
@@ -207,7 +218,7 @@ local function UpdateAlchemyPage()
 				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)
 			end
 		else
-			print("[PlantProfitPredictor] NEED NEW PAGE!!!")
+			print("[PlantProfitPredictor] Too many recipes! I need more pages!")
 		end
 	end
 end
@@ -222,6 +233,32 @@ end
 function PPPGotoAlchemyPage()
 	-- stuff to do when going to alchemy page
 	UpdateAlchemyPage()
+end
+function PPPGotoDebugPage()
+	-- stuff to do when going to debug page
+	
+	-- update last ah scan
+	if PPPAuctionHistory.time_of_query ~= nil then
+		PPPBaseFrameDebugFrameMainLastAHScanTime:SetText("Last Auction House scan: " .. PPPAuctionHistory.time_of_query)
+	else
+		PPPBaseFrameDebugFrameMainLastAHScanTime:SetText("Last Auction House scan: N/A")
+	end
+	PPPBaseFrameDebugFrameMainLastAHScanCount:SetText("Number of replicate items stored: " .. C_AuctionHouse.GetNumReplicateItems())
+	
+	local ah_items_checked_text = "Items checked for on the AH:\n"
+	for k,v in pairs(list_of_ah_items) do
+		ah_items_checked_text = ah_items_checked_text .. "[" .. k .. "]\n"
+	end
+	PPPBaseFrameDebugFrameMainAHItemsChecked:SetText(ah_items_checked_text)
+	
+	local count_of_found_items = 0
+	local ah_items_found_text = "Items found on the AH:\n"
+	for k,v in pairs(PPPAuctionHistory.items) do
+		ah_items_found_text = ah_items_found_text .. "[" .. k .. "] for " .. v .. "\n"
+		count_of_found_items = count_of_found_items + 1
+	end
+	PPPBaseFrameDebugFrameMainSavedItemsCount:SetText("Number of items stored in PPPAuctionHistory: " .. count_of_found_items)
+	PPPBaseFrameDebugFrameMainAHItemsFound:SetText(ah_items_found_text)
 end
 
 local function ToggleFrame()
@@ -267,14 +304,47 @@ function PPPScrollBarUpdate()
 	end
 end
 
+local function ScanNewAHList()
+	if C_AuctionHouse.GetNumReplicateItems()-1 ~= -1 then
+		print("[PlantProfitPredictor] About to scan " .. C_AuctionHouse.GetNumReplicateItems()-1 .. " items.")
+		PPPAuctionHistory.time_of_query = date()
+		PPPAuctionHistory.items = {}
+		local relevant_item_count = 0
+		for i = 0, C_AuctionHouse.GetNumReplicateItems()-1 do
+			local item_name, _, count, _, _, _, _, min_bid, _, buyout_price, _, _, _, _, _, _, item_id, _ = C_AuctionHouse.GetReplicateItemInfo(i)
+			if list_of_ah_items[item_id] then
+				PPPAuctionHistory.items[item_id] = {C_AuctionHouse.GetReplicateItemInfo(i)}
+				relevant_item_count = relevant_item_count + 1
+			end
+		end		
+		print("[PlantProfitPredictor] Finished scanning and found " .. relevant_item_count .. " relevant listings!")
+	else
+		print("[PlantProfitPredictor] No Auction House data to scan!")
+	end
+end
+
+function PPPDebugButtonScanNewAHList()
+	ScanNewAHList()
+end
+
+local first_query = false
 local delayed_yet = false
 local milled_waited_for_delay_yet = false
+-- PPPAuctionHistory = { 
 function PPPEventHandler(self, event, arg1, arg2, arg3)
 	if event == "ADDON_LOADED" and arg1 == "PlantProfitPredictor" then
 		-- check if saved variable exists
 		if PPPMillingHistory == nil then
 			PPPMillingHistory = {}
 		end
+		-- print(type(date()))
+		if PPPAuctionHistory == nil then
+			print("[PlantProfitPredictor] Open up the Auction House to store plant prices!")
+			PPPAuctionHistory = {time_of_query=nil, items={}}
+		else
+			print("[PlantProfitPredictor] Open up the Auction House to store plant prices!")
+		end
+		
 		if PPPBaseFrame:IsVisible() then
 			UpdatePlantCountFrame() -- run this in case client starts with window open & code ran before saved variables loaded
 		end
@@ -306,6 +376,20 @@ function PPPEventHandler(self, event, arg1, arg2, arg3)
 	elseif event == "LOOT_CLOSED" then
 		-- FinishedMillLooting()
 		milled_waited_for_delay_yet = true
+	elseif event == "AUCTION_HOUSE_SHOW" then
+		-- scan auction house
+		print("[PlantProfitPredictor] Scanning Auction House if possible!")
+		C_AuctionHouse.ReplicateItems()
+		first_query = true		
+	elseif event == "REPLICATE_ITEM_LIST_UPDATE" then
+		-- list update
+		if first_query then
+			-- first time AH data updated
+			--print(C_AuctionHouse.GetNumReplicateItems())
+			print("[PlantProfitPredictor] Updating PPPAuctionHistory!")
+			ScanNewAHList()
+		end
+		first_query = false
 	end
 end
 
@@ -315,6 +399,8 @@ function PlantProfitPredictor_OnLoad()
 	PPPBaseFrame:RegisterEvent("BAG_UPDATE")
 	PPPBaseFrame:RegisterEvent("BAG_UPDATE_DELAYED")
 	PPPBaseFrame:RegisterEvent("LOOT_CLOSED")
+	PPPBaseFrame:RegisterEvent("AUCTION_HOUSE_SHOW")
+	PPPBaseFrame:RegisterEvent("REPLICATE_ITEM_LIST_UPDATE")
 	PPPBaseFrame:SetScript("OnEvent", PPPEventHandler)
 end
 
