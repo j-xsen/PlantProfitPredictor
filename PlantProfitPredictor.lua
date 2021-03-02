@@ -5,6 +5,9 @@ local MAX_NUMBER_PLANTS = 6 -- how many plants can be shown on the plant page at
 local MAX_NUMBER_PIGMENTS = 3 -- how many pigments can be shown at once
 local MAX_NUMBER_ALCHEMY_CREATIONS = 3 -- how many alchemy creations can we show per page
 local MAX_NUMBER_ALCHEMY_INGREDIENTS = 6 -- how many alchemy ingredients can we show
+local MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH = 9 -- how many items found on the AH can we show per page
+local DEBUG_MASSIVE_SAVES = false -- this should NOT!! be used in production. archives every relevant ah entry
+local DEBUG_OPEN_ON_STARTUP = false -- should PPP open on startup?
 
 local list_of_ah_items = {}
 for k,v in pairs(PPPPlants) do
@@ -33,6 +36,27 @@ local function FindXsInBag(list)
 		end
 	end
 	return total
+end
+
+local function GetFormattedGoldString(starting)
+	if starting then
+		local copper = starting % 100
+		local silver = math.floor(starting/1e2) % 100
+		local gold = math.floor(starting/1e4)
+		local return_string = gold .. "g " .. silver .. "s " .. copper .. "c"
+		return return_string
+	else
+		print("[PlantProfitPredictor] Invalid starting!")
+		return nil
+	end
+end
+
+local function CostPerUnit(item)
+	if item and item[3] and item[10] then
+		return item[10]/item[3]
+	else
+		print("[PlantProfitPredictor] Invalid CostPerUnit(" .. (item or "nil") .. ")!")
+	end
 end
 
 -- PPPMillingHistory = { {id=plant_id, output = {luminous= amount, tranquil=amount, umbral=amount}, mass=was_it_mass } }
@@ -78,6 +102,24 @@ local function UpdateInventory()
 	end
 end
 
+local function FindCheapest(item_id)
+	local minimum_price = nil
+	if not DEBUG_MASSIVE_SAVES then
+		print("[PlantProfitPredictor] Warning! You are running FindCheapest() without DEBUG_MASSIVE_SAVES enabled!")
+	end
+	if PPPAuctionHistory.items[item_id] then
+		minimum_price = CostPerUnit(PPPAuctionHistory.items[item_id][1])
+		for i=1,#PPPAuctionHistory.items[item_id] do
+			if minimum_price > CostPerUnit(PPPAuctionHistory.items[item_id][i]) then
+				minimum_price = CostPerUnit(PPPAuctionHistory.items[item_id][i])
+			end
+		end
+	else
+		print("[PlantProfitPredictor] Invalid item_id " .. item_id)
+	end
+	return minimum_price
+end
+
 local function UpdatePlantCountFrame()
 	UpdateInventory()
 	
@@ -99,7 +141,15 @@ local function UpdatePlantCountFrame()
 				local possible_millings = math.floor(current_bag[CurrentPlants[i]] / 5)
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i]:Show()
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "PlantButton"]:SetNormalTexture(PPPPlants[CurrentPlants[i]].file)
-				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "PlantButton"]:SetText(PPPPlants[CurrentPlants[i]].name)
+				local plant_button_text = PPPPlants[CurrentPlants[i]].name
+				if PPPAuctionHistory and PPPAuctionHistory.items[CurrentPlants[i]] then
+					if DEBUG_MASSIVE_SAVES then
+						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(FindCheapest(CurrentPlants[i]))
+					else
+						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentPlants[i]]))
+					end
+				end
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "PlantButton"]:SetText(plant_button_text)
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "TimesCanMill"]:SetText("x" .. possible_millings)
 				frame:SetText(PPPPlants[CurrentPlants[i]].name .. ": " .. current_bag[CurrentPlants[i]])
 				
@@ -185,7 +235,15 @@ local function UpdateAlchemyPage()
 			if frame then
 				frame:Show()
 				_G[frame_name .. "PlantButton"]:SetNormalTexture(PPPAlchemyCreations[CurrentAlchemy[i]].file)
-				_G[frame_name .. "PlantButton"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
+				local plant_button_text = PPPAlchemyCreations[CurrentAlchemy[i]].name
+				if PPPAuctionHistory.items[CurrentAlchemy[i]] then
+					if DEBUG_MASSIVE_SAVES then
+						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(FindCheapest(CurrentAlchemy[i]))
+					else
+						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]]))
+					end
+				end
+				_G[frame_name .. "PlantButton"]:SetText(plant_button_text)
 				_G[frame_name .. "Name"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
 				
 				-- run through each ingredient
@@ -234,8 +292,121 @@ function PPPGotoAlchemyPage()
 	-- stuff to do when going to alchemy page
 	UpdateAlchemyPage()
 end
+local DebugAHCurrentPage = 1
+local DebugAHMassiveSavesCurrentPage = 1
+local DebugAHCurrentFoundItem = nil
+function PPPUpdateAHFoundItemsPage(direction)
+	if direction == 1 or direction == -1 or direction == 0 then
+		local new_page = DebugAHCurrentPage + direction
+		if new_page > 0 then
+			local ordered_found_ah_items = {}
+			for k,v in pairs(PPPAuctionHistory.items) do
+				ordered_found_ah_items[#ordered_found_ah_items+1] = k
+			end
+			local current_index = 1
+			local offset = new_page * MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH - MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH
+			while current_index <= MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH do
+				if ordered_found_ah_items[current_index + offset] then
+					_G["PPPBaseFrameDebugFrameMainAHItemFound" .. current_index]:SetText("[" .. ordered_found_ah_items[current_index+offset] .. "]")
+					_G["PPPBaseFrameDebugFrameMainAHItemFound" .. current_index]:Show()
+				else
+					_G["PPPBaseFrameDebugFrameMainAHItemFound" .. current_index]:Hide()
+				end
+				current_index = current_index + 1
+			end
+			DebugAHCurrentPage = new_page
+			PPPBaseFrameDebugFrameMainAHItemsFoundPageNumber:SetText(DebugAHCurrentPage)
+			if DebugAHCurrentPage == 1 then
+				PPPBaseFrameDebugFrameMainAHItemFoundPrevious:Disable()
+			else
+				PPPBaseFrameDebugFrameMainAHItemFoundPrevious:Enable()
+			end
+			if offset + MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH > #ordered_found_ah_items then
+				PPPBaseFrameDebugFrameMainAHItemFoundNext:Disable()
+			else
+				PPPBaseFrameDebugFrameMainAHItemFoundNext:Enable()
+			end
+		else
+			print("[PlantProfitPredictor] Invalid new_page " .. new_page)
+		end
+	elseif direction == 2 or direction == -2 or direction == -5 then
+		if DEBUG_MASSIVE_SAVES then
+			if DebugAHCurrentFoundItem then
+				local new_page = DebugAHMassiveSavesCurrentPage
+				if direction == 2 then
+					new_page = DebugAHMassiveSavesCurrentPage + 1
+				elseif direction == -2 then
+					new_page = DebugAHMassiveSavesCurrentPage - 1
+				end
+				if new_page > 0 then
+					local item = PPPAuctionHistory.items[DebugAHCurrentFoundItem][new_page]
+					if item then
+						local info_text = "name: "..item[1].."\ncount: "..item[3].."\nminBid: "..item[8].."\nbuyoutPrice: "..item[10]..
+									  "\nbidAmount: "..item[11].."\nsaleStatus: "..item[16].."\nhasAllInfo: "..tostring(item[18])..
+									  "\nCost Per Unit: "..CostPerUnit(item)
+						PPPBaseFrameDebugFrameMainAHItemFoundInfo:SetText(info_text)
+						DebugAHMassiveSavesCurrentPage = new_page
+						PPPBaseFrameDebugFrameMainAHItemsFoundMassivePageNumber:SetText(DebugAHMassiveSavesCurrentPage)
+						if DebugAHMassiveSavesCurrentPage == 1 then
+							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSavePrevious:Disable()
+						else
+							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSavePrevious:Enable()
+						end
+						if PPPAuctionHistory.items[DebugAHCurrentFoundItem] and #PPPAuctionHistory.items[DebugAHCurrentFoundItem] <= DebugAHMassiveSavesCurrentPage then
+							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSaveNext:Disable()
+						else
+							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSaveNext:Enable()
+						end
+					else
+						print("[PlantProfitPredictor] nil item on new_page " .. new_page)
+					end
+				else
+					print("[PlantProfitPredictor] Invalid new_page " .. new_page)
+				end
+			else
+				print("[PlantProfitPredictor] No current DebugAHCurrentFoundItem!")
+			end
+		else
+			print("[PlantProfitPredictor] Attempted to use DEBUG_MASSIVE_SAVES' directions with it not active!")
+		end
+	else
+		print("[PlantProfitPredictor] Invalid direction " .. direction)
+	end
+end
+function PPPAHFoundItemClicked(button)
+	local button_id = button:GetID()
+	local ordered_found_ah_items = {}
+	for k,v in pairs(PPPAuctionHistory.items) do
+		ordered_found_ah_items[#ordered_found_ah_items+1] = k
+	end
+	
+	local offset = DebugAHCurrentPage * MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH - MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH
+	
+	if ordered_found_ah_items[button_id + offset] then
+		if DEBUG_MASSIVE_SAVES then
+			DebugAHCurrentFoundItem = PPPAuctionHistory.items[ordered_found_ah_items[button_id+offset]][1][17]
+			DebugAHMassiveSavesCurrentPage=1
+			PPPBaseFrameDebugFrameMainAHItemFoundMassiveSaveNext:Show()
+			PPPBaseFrameDebugFrameMainAHItemFoundMassiveSavePrevious:Show()
+			PPPBaseFrameDebugFrameMainAHItemFoundInfoID:SetText("["..DebugAHCurrentFoundItem.."] x"..#PPPAuctionHistory.items[ordered_found_ah_items[button_id+offset]])
+			PPPUpdateAHFoundItemsPage(-5)
+		else
+			PPPBaseFrameDebugFrameMainAHItemFoundInfoID:SetText("["..ordered_found_ah_items[button_id+offset].."]")
+			local item = PPPAuctionHistory.items[ordered_found_ah_items[button_id+offset]]
+			local info_text = "name: "..item[1].."\ncount: "..item[3].."\nminBid: "..item[8].."\nmidIncrement: "..item[9].."\nbuyoutPrice: "..item[10]..
+							  "\nbidAmount: "..item[11].."\nsaleStatus: "..item[16].."\nhasAllInfo: "..tostring(item[18])
+			local info_text = "name: "..item[1].."\ncount: "..item[3].."\nminBid: "..item[8].."\nbuyoutPrice: "..item[10]..
+							  "\nbidAmount: "..item[11].."\nsaleStatus: "..item[16].."\nhasAllInfo: "..tostring(item[18])..
+							  "\nCost Per Unit: "..CostPerUnit(item)
+			PPPBaseFrameDebugFrameMainAHItemFoundInfo:SetText(info_text)
+		end
+	else
+		print("[PlantProfitPredictor] Invalid ordered_found_ah_items: button_id=" .. button_id .. " offset=" .. offset)
+	end
+end
 function PPPGotoDebugPage()
 	-- stuff to do when going to debug page
+	PPPUpdateAHFoundItemsPage(0)
 	
 	-- update last ah scan
 	if PPPAuctionHistory.time_of_query ~= nil then
@@ -252,13 +423,10 @@ function PPPGotoDebugPage()
 	PPPBaseFrameDebugFrameMainAHItemsChecked:SetText(ah_items_checked_text)
 	
 	local count_of_found_items = 0
-	local ah_items_found_text = "Items found on the AH:\n"
 	for k,v in pairs(PPPAuctionHistory.items) do
-		ah_items_found_text = ah_items_found_text .. "[" .. k .. "] for " .. v .. "\n"
 		count_of_found_items = count_of_found_items + 1
 	end
 	PPPBaseFrameDebugFrameMainSavedItemsCount:SetText("Number of items stored in PPPAuctionHistory: " .. count_of_found_items)
-	PPPBaseFrameDebugFrameMainAHItemsFound:SetText(ah_items_found_text)
 end
 
 local function ToggleFrame()
@@ -273,7 +441,7 @@ end
 function PPPScrollBarUpdate()
 	local line, lineplusoffset
 	FauxScrollFrame_Update(PPPBaseFrameMillingFrameLogScrollFrame,#PPPMillingHistory,12,25) -- (frame, total number, number shown, height)
-	for line=1,12 do
+	for line=1,MAX_NUMBER_MILLING_LIST do
 		lineplusoffset = line + FauxScrollFrame_GetOffset(PPPBaseFrameMillingFrameLogScrollFrame)
 		if lineplusoffset <= #PPPMillingHistory then
 			local plant_name = nil
@@ -309,11 +477,47 @@ local function ScanNewAHList()
 		print("[PlantProfitPredictor] About to scan " .. C_AuctionHouse.GetNumReplicateItems()-1 .. " items.")
 		PPPAuctionHistory.time_of_query = date()
 		PPPAuctionHistory.items = {}
+		local continuables = {}
 		local relevant_item_count = 0
 		for i = 0, C_AuctionHouse.GetNumReplicateItems()-1 do
-			local item_name, _, count, _, _, _, _, min_bid, _, buyout_price, _, _, _, _, _, _, item_id, _ = C_AuctionHouse.GetReplicateItemInfo(i)
+			local item_name, _, count, _, _, _, _, min_bid, _, buyout_price, _, _, _, _, _, _, item_id, has_all_data = C_AuctionHouse.GetReplicateItemInfo(i)
 			if list_of_ah_items[item_id] then
-				PPPAuctionHistory.items[item_id] = {C_AuctionHouse.GetReplicateItemInfo(i)}
+				if DEBUG_MASSIVE_SAVES then
+					--print("[PlantProfitPredictor] Archiving every listing! You should not do this!")
+					if not PPPAuctionHistory.items[item_id] then
+						PPPAuctionHistory.items[item_id] = {}
+					end
+					PPPAuctionHistory.items[item_id][#PPPAuctionHistory.items[item_id]+1] = {C_AuctionHouse.GetReplicateItemInfo(i)}
+					if not has_all_data then
+						local item = Item:CreateFromItemID(item_id)
+						continuables[item] = true
+						item:ContinueOnItemLoad(function()
+							if not PPPAuctionHistory.items[item_id] then
+								PPPAuctionHistory[item_id] = {}
+							end
+							PPPAuctionHistory.items[item_id][#PPPAuctionHistory.items[item_id]+1] = {C_AuctionHouse.GetReplicateItemInfo(i)}
+							continuables[item] = nil
+							next(continuables)
+						end)
+					end
+				else
+					if PPPAuctionHistory.items[item_id] then
+						if PPPAuctionHistory.items[item_id][10] / PPPAuctionHistory.items[item_id][3] > buyout_price / count then
+							PPPAuctionHistory.items[item_id] = {C_AuctionHouse.GetReplicateItemInfo(i)}
+						end
+					else
+						PPPAuctionHistory.items[item_id] = {C_AuctionHouse.GetReplicateItemInfo(i)}
+					end
+					if not has_all_data then
+						local item=Item:CreateFromItemID(item_id)
+						continuables[item] = true
+						item:ContinueOnItemLoad(function()
+							if PPPAuctionHistory.items[item_id][10]/PPPAuctionHistory.items[item_id][3] > buyout_price / count then
+								PPPAuctionHistory.items[item] = {C_AuctionHouse.GetReplicateItemInfo(i)}
+							end
+						end)
+					end
+				end
 				relevant_item_count = relevant_item_count + 1
 			end
 		end		
@@ -341,8 +545,10 @@ function PPPEventHandler(self, event, arg1, arg2, arg3)
 		if PPPAuctionHistory == nil then
 			print("[PlantProfitPredictor] Open up the Auction House to store plant prices!")
 			PPPAuctionHistory = {time_of_query=nil, items={}}
-		else
-			print("[PlantProfitPredictor] Open up the Auction House to store plant prices!")
+		end
+		
+		if DEBUG_OPEN_ON_STARTUP then
+			PPPBaseFrame:Show()
 		end
 		
 		if PPPBaseFrame:IsVisible() then
