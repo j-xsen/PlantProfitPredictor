@@ -19,6 +19,9 @@ end
 for k,v in pairs(PPPAlchemyCreations) do
 	list_of_ah_items[k]=true
 end
+for k,v in pairs(PPPInks) do
+	list_of_ah_items[k]=true
+end
 
 local function FindXsInBag(list)
 	local total = {}
@@ -158,6 +161,7 @@ local function UpdatePlantCountFrame()
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText("|cffffff00Per milling of 5 plants:|r|cffffffff")
 				
 				local estimated_pigment_profit = 0
+				local estimated_ink_profit = 0
 				-- set texture and text of pigment buttons
 				for j=1,#PPPPlants[CurrentPlants[i]].pigments do
 					if j<=MAX_NUMBER_PIGMENTS then
@@ -197,29 +201,40 @@ local function UpdatePlantCountFrame()
 							local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
 							if total_milled ~= 0 then
 								local estimation_per_milling = (total_milled/times_milled)
-								local estimated_profit = 0
+								local estimated_i_profit = 0
 								if PPPAuctionHistory and PPPAuctionHistory.items[pigment_item_id] then
-									estimated_profit = math.floor(estimation_per_milling*possible_millings)*CostPerUnit(PPPAuctionHistory.items[pigment_item_id])
+									local estimated_profit = math.floor(estimation_per_milling*possible_millings)*CostPerUnit(PPPAuctionHistory.items[pigment_item_id])
 									estimated_pigment_profit = estimated_pigment_profit + estimated_profit
 									pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffff00Estimated profits:\n"..GetFormattedGoldString(estimated_profit))
+									if PPPAuctionHistory.items[PPPPigments[pigment_item_id].ink] then
+										local estimated_i_profit = math.floor(estimation_per_milling*possible_millings)*CostPerUnit(PPPAuctionHistory.items[PPPPigments[pigment_item_id].ink])
+										estimated_ink_profit = estimated_ink_profit + estimated_i_profit
+										pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffd200"..PPPInks[PPPPigments[pigment_item_id].ink].name.."\n"..GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[PPPPigments[pigment_item_id].ink])))
+										pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffff00Estimated profits as inks:\n"..GetFormattedGoldString(estimated_i_profit))
+									end
 								end
 								_G[pigment_frame_name .. "Count"]:SetText(string.format("%.1f",estimation_per_milling*possible_millings))
 								_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. ": " .. string.format("%.1f",estimation_per_milling))
 							else
+								if PPPAuctionHistory and PPPAuctionHistory.items[PPPPigments[pigment_item_id].ink] then
+									pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffd200"..PPPInks[PPPPigments[pigment_item_id].ink].name.."\n"..GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[PPPPigments[pigment_item_id].ink])))
+								end
 								_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. ": 0")
 								_G[pigment_frame_name .. "Count"]:SetText("0")
 							end
 						else
-							print("[PlantProfitPredictor.lua:172] Could not locate frame " .. pigment_frame_name)
+							print("[PlantProfitPredictor.lua] Could not locate frame " .. pigment_frame_name)
 						end
 					else
 						print("[PlantProfitPredictor] Too many pigments!")
 					end
 				end
 				local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
-				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. "|r\n\n|cffffff00Estimated profit from pigments:|r\n|cffffffff" .. GetFormattedGoldString(estimated_pigment_profit) .. "|r")
+				local additional_text = "|r\n\n|cffffff00Estimated profit from pigments:|r\n|cffffffff" .. GetFormattedGoldString(estimated_pigment_profit) .. "|r"..
+				                        "|r\n\n|cffffff00Estimated profit from inks:|r\n|cffffffff" .. GetFormattedGoldString(estimated_ink_profit).."|r"
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. additional_text)
 			else
-				print("[PlantProfitPredictor.lua:193] Could not locate frame " .. frame_name)
+				print("[PlantProfitPredictor.lua] Could not locate frame " .. frame_name)
 			end
 		else
 			print("[PlantProfitPredictor] NEED NEW PAGE!!!")
