@@ -7,7 +7,7 @@ local MAX_NUMBER_ALCHEMY_CREATIONS = 3 -- how many alchemy creations can we show
 local MAX_NUMBER_ALCHEMY_INGREDIENTS = 6 -- how many alchemy ingredients can we show
 local MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH = 9 -- how many items found on the AH can we show per page
 local DEBUG_MASSIVE_SAVES = false -- this should NOT!! be used in production. archives every relevant ah entry
-local DEBUG_OPEN_ON_STARTUP = false -- should PPP open on startup?
+local DEBUG_OPEN_ON_STARTUP = true -- should PPP open on startup?
 
 local list_of_ah_items = {}
 for k,v in pairs(PPPPlants) do
@@ -43,7 +43,7 @@ local function GetFormattedGoldString(starting)
 		local copper = starting % 100
 		local silver = math.floor(starting/1e2) % 100
 		local gold = math.floor(starting/1e4)
-		local return_string = gold .. "g " .. silver .. "s " .. copper .. "c"
+		local return_string = "|cffffff00" .. gold .. "g|r |cffb5b5bd" .. silver .. "s|r |cffaf633e" .. copper .. "c|r"
 		return return_string
 	else
 		print("[PlantProfitPredictor] Invalid starting!")
@@ -146,7 +146,8 @@ local function UpdatePlantCountFrame()
 					if DEBUG_MASSIVE_SAVES then
 						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(FindCheapest(CurrentPlants[i]))
 					else
-						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentPlants[i]]))
+						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentPlants[i]]))..
+						                    "\n\n|cffffff00Estimated profits:|r\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentPlants[i]])*current_bag[CurrentPlants[i]])
 					end
 				end
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "PlantButton"]:SetText(plant_button_text)
@@ -156,6 +157,7 @@ local function UpdatePlantCountFrame()
 				-- clear arrow text
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText("|cffffff00Per milling of 5 plants:|r|cffffffff")
 				
+				local estimated_pigment_profit = 0
 				-- set texture and text of pigment buttons
 				for j=1,#PPPPlants[CurrentPlants[i]].pigments do
 					if j<=MAX_NUMBER_PIGMENTS then
@@ -168,9 +170,14 @@ local function UpdatePlantCountFrame()
 						pigment_frame_name = "PPPBaseFrameMillingFrameMainPlant" .. i .. "PigmentButton" .. j
 						pigment_frame = _G[pigment_frame_name]
 						if pigment_frame then
+							local pigment_item_id = PPPPlants[CurrentPlants[i]].pigments[j]
+							if PPPAuctionHistory and PPPAuctionHistory.items[pigment_item_id] then
+								pigment_frame:SetText(PPPPigments[pigment_item_id].name .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[pigment_item_id])))
+							else
+								pigment_frame:SetText(PPPPigments[pigment_item_id].name)
+							end
 							pigment_frame:Show()
-							pigment_frame:SetText(PPPPigments[PPPPlants[CurrentPlants[i]].pigments[j]].name)
-							pigment_frame:SetNormalTexture(PPPPigments[PPPPlants[CurrentPlants[i]].pigments[j]].file)
+							pigment_frame:SetNormalTexture(PPPPigments[pigment_item_id].file)
 							
 							-- update pigment estimate
 							local total_milled = 0
@@ -178,7 +185,7 @@ local function UpdatePlantCountFrame()
 							if PPPMillingHistory ~= nil then
 								for k,v in pairs(PPPMillingHistory) do
 									if v.id == CurrentPlants[i] then
-										total_milled = total_milled + v.output[PPPPlants[CurrentPlants[i]].pigments[j]]
+										total_milled = total_milled + v.output[pigment_item_id]
 										if v.mass_milled then
 											times_milled = times_milled + 4
 										else
@@ -190,6 +197,12 @@ local function UpdatePlantCountFrame()
 							local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
 							if total_milled ~= 0 then
 								local estimation_per_milling = (total_milled/times_milled)
+								local estimated_profit = 0
+								if PPPAuctionHistory and PPPAuctionHistory.items[pigment_item_id] then
+									estimated_profit = math.floor(estimation_per_milling*possible_millings)*CostPerUnit(PPPAuctionHistory.items[pigment_item_id])
+									estimated_pigment_profit = estimated_pigment_profit + estimated_profit
+									pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffff00Estimated profits:\n"..GetFormattedGoldString(estimated_profit))
+								end
 								_G[pigment_frame_name .. "Count"]:SetText(string.format("%.1f",estimation_per_milling*possible_millings))
 								_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. ": " .. string.format("%.1f",estimation_per_milling))
 							else
@@ -204,7 +217,7 @@ local function UpdatePlantCountFrame()
 					end
 				end
 				local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
-				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. "|r")
+				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. "|r\n\n|cffffff00Estimated profit from pigments:|r\n|cffffffff" .. GetFormattedGoldString(estimated_pigment_profit) .. "|r")
 			else
 				print("[PlantProfitPredictor.lua:193] Could not locate frame " .. frame_name)
 			end

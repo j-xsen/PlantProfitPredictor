@@ -56,17 +56,17 @@ PPPPigments = {
 	[173057] = {
 		name="Luminous Pigment",
 		file=3716974,
-		pigment=173059,
+		ink=173059,
 	},
 	[175788] = {
 		name="Tranquil Pigment",
 		file=3716977,
-		pigment=175970,
+		ink=175970,
 	},
 	[173056] = {
 		name="Umbral Pigment",
 		file=3716978,
-		pigment=173058,
+		ink=173058,
 	}
 }
 
