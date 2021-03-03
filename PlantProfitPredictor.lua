@@ -69,14 +69,7 @@ local last_bag = {}
 local current_bag = {}
 local function UpdateInventory()
 	last_bag = current_bag
-	local list_of_items = {}
-	for k,v in pairs(PPPPlants) do
-		list_of_items[k] = 0
-	end
-	for k,v in pairs(PPPPigments) do
-		list_of_items[k] = 0
-	end
-	current_bag = FindXsInBag(list_of_items)
+	current_bag = FindXsInBag(list_of_ah_items)
 	
 	-- check for any differences
 	if currently_milling then
@@ -223,7 +216,7 @@ local function UpdatePlantCountFrame()
 								_G[pigment_frame_name .. "Count"]:SetText("0")
 							end
 						else
-							print("[PlantProfitPredictor.lua] Could not locate frame " .. pigment_frame_name)
+							print("[PlantProfitPredictor] Could not locate frame " .. pigment_frame_name)
 						end
 					else
 						print("[PlantProfitPredictor] Too many pigments!")
@@ -234,7 +227,7 @@ local function UpdatePlantCountFrame()
 				                        "|r\n\n|cffffff00Estimated profit from inks:|r\n|cffffffff" .. GetFormattedGoldString(estimated_ink_profit).."|r"
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. additional_text)
 			else
-				print("[PlantProfitPredictor.lua] Could not locate frame " .. frame_name)
+				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)
 			end
 		else
 			print("[PlantProfitPredictor] NEED NEW PAGE!!!")
@@ -269,6 +262,10 @@ local function UpdateAlchemyPage()
 						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(FindCheapest(CurrentAlchemy[i]))
 					else
 						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]]))
+						print(CurrentAlchemy[i])
+						if current_bag[CurrentAlchemy[i]] then
+							plant_button_text = plant_button_text .. "\n\n|cffffff00Estimated profit:\n"..GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]])*current_bag[CurrentAlchemy[i]])
+						end
 					end
 				end
 				_G[frame_name .. "PlantButton"]:SetText(plant_button_text)
@@ -525,7 +522,6 @@ local function ScanNewAHList()
 							end
 							PPPAuctionHistory.items[item_id][#PPPAuctionHistory.items[item_id]+1] = {C_AuctionHouse.GetReplicateItemInfo(i)}
 							continuables[item] = nil
-							next(continuables)
 						end)
 					end
 				else
@@ -543,6 +539,7 @@ local function ScanNewAHList()
 							if PPPAuctionHistory.items[item_id][10]/PPPAuctionHistory.items[item_id][3] > buyout_price / count then
 								PPPAuctionHistory.items[item] = {C_AuctionHouse.GetReplicateItemInfo(i)}
 							end
+							continuables[item] = nil
 						end)
 					end
 				end
