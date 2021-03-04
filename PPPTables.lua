@@ -75,14 +75,17 @@ PPPInks = {
 	[173059] = {
 		name="Luminous Ink",
 		file=3716970,
+		pigment=173057,
 	},
 	[175970] = {
 		name="Tranquil Ink",
 		file=3716971,
+		pigment=175788,
 	},
 	[173058] = {
 		name="Umbral Ink",
 		file=3716972,
+		pigment=173056,
 	},
 }
 
@@ -136,9 +139,17 @@ PPPAlchemyCreations = {
 		ingredients={
 			[168583] = 5
 		}
+	},
+	[171274]={
+		name="Potion of Spectral Stamina",
+		tech_name="PotionOfSpectralStamina",
+		file=3566837,
+		ingredients={
+			[170554]=5
+		}
 	}
 }
-PPPShadowlandsAlchemy = {171276, 171273,171278,307093}
+PPPShadowlandsAlchemy = {171276, 171273,171278,307093,171274}
 
 -- ALL THE INSCRIPTION CREATIONS --
 PPPInscriptionCreations = {
