@@ -3,11 +3,11 @@ local CurrentAlchemy = PPPShadowlandsAlchemy
 local MAX_NUMBER_MILLING_LIST = 12 -- max number of items displayed on the milling tab
 local MAX_NUMBER_PLANTS = 6 -- how many plants can be shown on the plant page at once
 local MAX_NUMBER_PIGMENTS = 3 -- how many pigments can be shown at once
-local MAX_NUMBER_ALCHEMY_CREATIONS = 3 -- how many alchemy creations can we show per page
+local MAX_NUMBER_ALCHEMY_CREATIONS = 2 -- how many alchemy creations can we show per page
 local MAX_NUMBER_ALCHEMY_INGREDIENTS = 6 -- how many alchemy ingredients can we show
 local MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH = 9 -- how many items found on the AH can we show per page
 local DEBUG_MASSIVE_SAVES = false -- this should NOT!! be used in production. archives every relevant ah entry
-local DEBUG_OPEN_ON_STARTUP = true -- should PPP open on startup?
+local DEBUG_OPEN_ON_STARTUP = false -- should PPP open on startup?
 
 local list_of_ah_items = {}
 for k,v in pairs(PPPPlants) do
@@ -223,8 +223,8 @@ local function UpdatePlantCountFrame()
 					end
 				end
 				local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
-				local additional_text = "|r\n\n|cffffff00Estimated profit from pigments:|r\n|cffffffff" .. GetFormattedGoldString(estimated_pigment_profit) .. "|r"..
-				                        "|r\n\n|cffffff00Estimated profit from inks:|r\n|cffffffff" .. GetFormattedGoldString(estimated_ink_profit).."|r"
+				local additional_text = "|r\n\n|cffffff00Estimated profits from pigments:|r\n|cffffffff" .. GetFormattedGoldString(estimated_pigment_profit) .. "|r"..
+				                        "|r\n\n|cffffff00Estimated profits from inks:|r\n|cffffffff" .. GetFormattedGoldString(estimated_ink_profit).."|r"
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. additional_text)
 			else
 				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)
@@ -247,10 +247,39 @@ local function FinishedMillLooting()
 	end
 end
 
+local function StoredAHHasAllIngredients(creation)
+	local has_all = true
+	for k,v in pairs(creation.ingredients) do
+		if not PPPAuctionHistory.items[k] then
+			has_all = false
+			print("[PlantProfitPredictor] I do not have an item ID " .. k .. " stored!")
+		end
+	end
+	return has_all
+end
+
+local current_alchemy_page = 1
 local function UpdateAlchemyPage()
 	UpdateInventory()
-	for i=1,#CurrentAlchemy do
-		if i<= MAX_NUMBER_ALCHEMY_CREATIONS then
+	
+	-- bottom bar stuff
+	PPPBaseFrameAlchemyFrameMainBottomBarPageNumber:SetText(current_alchemy_page)
+	if current_alchemy_page == 1 then
+		PPPBaseFrameAlchemyFrameMainBottomBarButtonLeft:Disable()
+	else
+		PPPBaseFrameAlchemyFrameMainBottomBarButtonLeft:Enable()
+	end
+	print(#CurrentAlchemy .. " / " .. MAX_NUMBER_ALCHEMY_CREATIONS .. " = " .. (#CurrentAlchemy/MAX_NUMBER_ALCHEMY_CREATIONS))
+	if current_alchemy_page >= #CurrentAlchemy / MAX_NUMBER_ALCHEMY_CREATIONS then
+		PPPBaseFrameAlchemyFrameMainBottomBarButtonRight:Disable()
+	else
+		PPPBaseFrameAlchemyFrameMainBottomBarButtonRight:Enable()
+	end
+	
+	-- display creation info
+	local alchemy_offset = (current_alchemy_page * MAX_NUMBER_ALCHEMY_CREATIONS) - MAX_NUMBER_ALCHEMY_CREATIONS
+	for i=alchemy_offset+1,MAX_NUMBER_ALCHEMY_CREATIONS do
+		--if i<= MAX_NUMBER_ALCHEMY_CREATIONS then
 			local frame_name = "PPPBaseFrameAlchemyFrameMainCreation" .. i
 			local frame = _G[frame_name]
 			if frame then
@@ -262,19 +291,31 @@ local function UpdateAlchemyPage()
 						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(FindCheapest(CurrentAlchemy[i]))
 					else
 						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]]))
-						print(CurrentAlchemy[i])
 						if current_bag[CurrentAlchemy[i]] then
-							plant_button_text = plant_button_text .. "\n\n|cffffff00Estimated profit:\n"..GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]])*current_bag[CurrentAlchemy[i]])
+							plant_button_text = plant_button_text .. "\n\n|cffffff00Estimated profits:\n"..GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]])*current_bag[CurrentAlchemy[i]])
 						end
 					end
 				end
 				_G[frame_name .. "PlantButton"]:SetText(plant_button_text)
 				_G[frame_name .. "Name"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
+				local ah_all_ingredients_stored = StoredAHHasAllIngredients(PPPAlchemyCreations[CurrentAlchemy[i]])
+				local arrow_text = "|cffffff00Estimated cost to produce:|r"
+				if not ah_all_ingredients_stored then
+					arrow_text = arrow_text .. "|cffffffffUNKNOWN|r"
+				end
 				
 				-- run through each ingredient
 				local ingredient_number = 1
 				local max_can_create = 0
+				local total_creation_cost = 0
 				for k,v in pairs(PPPAlchemyCreations[CurrentAlchemy[i]].ingredients) do
+					-- add to arrow
+					if ah_all_ingredients_stored then
+						local ingredient_cost = CostPerUnit(PPPAuctionHistory.items[k])*v
+						arrow_text = arrow_text .."\n".. PPPPlants[k].name .. ": " .. GetFormattedGoldString(ingredient_cost)
+						total_creation_cost = total_creation_cost + ingredient_cost
+					end
+					
 					local can_create_with_this_ingredient = math.floor(current_bag[k] / v)
 					if ingredient_number == 1 or can_create_with_this_ingredient < max_can_create then
 						max_can_create = can_create_with_this_ingredient
@@ -296,13 +337,17 @@ local function UpdateAlchemyPage()
 						print("[PlantProfitPredictor] I'm not equipped to handle that many ingredients!")
 					end
 				end
+				if ah_all_ingredients_stored then
+					arrow_text = arrow_text .. "\n\nTotal: " .. GetFormattedGoldString(total_creation_cost)
+				end
+				_G[frame_name .. "Arrow"]:SetText(arrow_text)
 				can_create_frame = _G[frame_name .. "TimesCanCreate"]:SetText("x" .. max_can_create)
 			else
 				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)
 			end
-		else
-			print("[PlantProfitPredictor] Too many recipes! I need more pages!")
-		end
+		--else
+		--	print("[PlantProfitPredictor] Too many recipes! I need more pages!")
+		--end
 	end
 end
 

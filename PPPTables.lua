@@ -127,6 +127,14 @@ PPPAlchemyCreations = {
 			[168586] = 3,
 			[168589] = 3,
 		},
+	},
+	[307093] = {
+		name="Potion of Spectral Agility",
+		tech_name="PotionOfSpectralIntellect",
+		file=3566835,
+		ingredients={
+			[168583] = 5
+		}
 	}
 }
-PPPShadowlandsAlchemy = {171276, 171273,171278}
+PPPShadowlandsAlchemy = {171276, 171273,171278,307093}
