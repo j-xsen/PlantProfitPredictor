@@ -6,3 +6,6 @@
 
 PlantProfitPredictor.xml
 PlantProfitPredictor.lua
+Debug/Debug.lua
+Alchemy/Alchemy.lua
+Inscription/Milling.lua

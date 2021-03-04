@@ -19,6 +19,7 @@
 		</Scripts>
 	</Button>
 	-->
+	<!-- template for one of the tab buttons to the right of the frame -->
 	<CheckButton name="PPPSkillLinetabTemplate" virtual="true" inherits="SpellBookSkillLineTabTemplate">
 		<Scripts>
 			<OnLoad>
@@ -35,6 +36,8 @@
 			</OnClick>
 		</Scripts>
 	</CheckButton>
+	
+	<!-- template for the buttons that change inner tabs -->
 	<Button name="PPPTabButtonTemplate" virtual="true" inherits="SpellBookFrameTabButtonTemplate">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" x="0" y="1"/>
@@ -53,6 +56,8 @@
 			</OnEnter>
 		</Scripts>
 	</Button>
+	
+	<!-- the nav bar on the right side of the base frame -->
 	<Frame name="PPPSidebarTemplate" virtual="true">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="PPPBaseFrame" relativePoint="TOPLEFT"/>
@@ -127,24 +132,35 @@
 		</Anchors>
 	</Button>
 	
+	<!-- template for a small button -->
 	<Button name="PPPSmallButton" virtual="true" inherits="PPPButtonTemplate">
 		<Size x="25" y="25"/>
 	</Button>
 	
-	<!-- the pigment button w/ tooltip -->
-	<Button name="PPPPigmentButton" virtual="true" inherits="PPPSmallButton">
-		<Layers>
-			<Layer name="OVERLAY">
-				<FontString name="$parentCount" inherits="GameFontNormal" text="0">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="3"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
+	<!-- the arrow button -->
+	<Button name="PPPArrowButton" virtual="true" inherits="PPPButtonTemplate">
+		<Size x="23" y="23"/>
+		<Anchors>
+			<Anchor point="LEFT" x="200" y="0"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				self:SetNormalTexture(450908)
+			</OnLoad>
+		</Scripts>
 	</Button>
 	
+	<!-- template for small button, good for lists -->
+	<Button name="PPPListButtonTemplate" virtual="true" inherits="UIPanelButtonTemplate" hidden="true">
+		<Size x="75" y="25"/>
+		<Scripts>
+			<OnClick>
+				PPPAHFoundItemClicked(self)
+			</OnClick>
+		</Scripts>
+	</Button>
+	
+	<!-- template for ingredients under creations -->
 	<Button name="PPPCreationIngredientTemplate" virtual="true" inherits="PPPSmallButton" hidden="true">
 		<Layers>
 			<Layer name="OVERLAY">
@@ -164,123 +180,7 @@
 		</Layers>
 	</Button>
 	
-	<!-- the arrow button -->
-	<Button name="PPPArrowButton" virtual="true" inherits="PPPButtonTemplate">
-		<Size x="23" y="23"/>
-		<Anchors>
-			<Anchor point="LEFT" x="200" y="0"/>
-		</Anchors>
-		<Scripts>
-			<OnLoad>
-				self:SetNormalTexture(450908)
-			</OnLoad>
-		</Scripts>
-	</Button>
-	
-	<Button name="PPPListButtonTemplate" virtual="true" inherits="UIPanelButtonTemplate" hidden="true">
-		<Size x="75" y="25"/>
-		<Scripts>
-			<OnClick>
-				PPPAHFoundItemClicked(self)
-			</OnClick>
-		</Scripts>
-	</Button>
-	
-	<!-- the milling page's plant listings / expected milling output -->
-	<Frame name="PPPMillingDefault" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
-		<Size x="45" y="45"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="0" y="0"/>
-		</Anchors>
-		<Frames>
-			<Button name="$parentPlantButton" inherits="PPPPlantButton"/>
-			<Button name="$parentArrow" inherits="PPPArrowButton"/>
-			
-			<!-- pigments -->			
-			<Button name="$parentPigmentButton1" inherits="PPPPigmentButton" id="1">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentArrow" relativePoint="RIGHT" x="80"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentPigmentButton2" inherits="PPPPigmentButton" id="2">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPigmentButton1" relativePoint="RIGHT" x="38"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentPigmentButton3" inherits="PPPPigmentButton" id="3">
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPigmentButton2" relativePoint="RIGHT" x="38"/>
-				</Anchors>
-			</Button>
-		</Frames>
-		<Layers>
-			<Layer name="OVERLAY">
-				<FontString name="$parentTimesCanMill" inherits="GameFontNormal" text="x5">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="10" RelativeTo="$parentArrow"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentName" inherits="GameFontNormal" text="$parentName">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="10"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
-	
-	<!-- the milling log page's listings -->
-	<Button name="PPPMillingLogTemplate" virtual="true" toplevel="true" mouseEnabled="true">
-		<Size x="25" y="25"/>
-		<Anchors>
-			<Anchor point="TOPLEFT" x="0" y="0"/>
-		</Anchors>
-		<Layers>
-			<Layer name="OVERLAY">
-				<Texture name="$parentStripe">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="-3" y="2"/>
-						<Anchor point="BOTTOMRIGHT" x="443" y="-1"/>
-					</Anchors>
-					<Color a=".08" r="1" g="1" b="1"/>
-				</Texture>
-				<FontString name="$parentName" inherits="GameFontNormal" text="$parentName">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="5"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentPlantButton" inherits="PPPPlantButton">
-				<Size x="25" y="25"/>
-			</Button>
-			
-			<!-- pigments -->			
-			<Button name="$parentPigmentButton1" inherits="PPPPigmentButton" id="1">
-				<Size x="20" y="20"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPlantButton" relativePoint="RIGHT" x="280"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentPigmentButton2" inherits="PPPPigmentButton" id="2">
-				<Size x="20" y="20"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPigmentButton1" relativePoint="RIGHT" x="35"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentPigmentButton3" inherits="PPPPigmentButton" id="3">
-				<Size x="20" y="20"/>
-				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPigmentButton2" relativePoint="RIGHT" x="35"/>
-				</Anchors>
-			</Button>
-		</Frames>
-	</Button>
-	
+	<!-- template for a single creation -->
 	<Frame name="PPPCreationTemplate" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
 		<Size x="45" y="45"/>
 		<Anchors>
@@ -342,6 +242,7 @@
 		</Layers>
 	</Frame>
 	
+	<!-- template for a single creation, but with a stripe behind it -->
 	<Frame name="PPPCreationStripedTemplate" inherits="PPPCreationTemplate" virtual="true">
 		<Layers>
 			<Layer name="OVERLAY">
@@ -356,6 +257,7 @@
 		</Layers>
 	</Frame>
 	
+	<!-- template for bottom pseudo scroll bar -->
 	<Frame name="PPPBottomBarTemplate" virtual="true">
 		<Anchors>
 			<Anchor relativePoint="BOTTOMLEFT" point="TOPLEFT" y="30"/>
@@ -406,8 +308,10 @@
 		</Anchors>
 	</Frame>
 	
+	<!-- template for each inner tab -->
 	<Frame name="PPPInnerTabTemplate" virtual="true" hidden="true" setAllPoints="true"/>
 	
+	<!-- template for creation pages like alchemy and inscription -->
 	<Frame name="PPPFourCreationsTemplate" virtual="true" inherits="PPPInnerTabTemplate">
 		<Frames>
 			<Frame name="$parentCreation1" inherits="PPPCreationTemplate"/>
@@ -430,178 +334,8 @@
 		</Frames>
 	</Frame>
 	
-	<!-- not really much of a template... kind of just the whole thing -->
-	<Frame name="PPPDebugFrameTemplate" virtual="true" inherits="PPPInnerTabTemplate">
-		<Layers>
-			<Layer name="OVERLAY">
-				<FontString name="$parentLastAHScanTime" inherits="GameFontNormal" text="Last Auction House scan: ">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentSavedItemsCount" inherits="GameFontNormal" text="Number of items stored in PPPAuctionHistory: ">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentLastAHScanTime"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentLastAHScanCount" inherits="GameFontNormal" text="Number of replicate items stored: ">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentSavedItemsCount"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentAHItemsChecked" inherits="GameFontNormal" text="Items checked for on the AH: ">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="-10" relativeTo="$parentLastAHScanCount"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentAHItemsFound" inherits="GameFontNormal" text="Items found on the AH:">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOP" relativeTo="$parentAHItemsChecked"/>
-						<Anchor point="RIGHT" relativeTo="$parent" x="-45"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-		<Frames>
-			<Button name="$parentAHItemFound3" inherits="PPPListButtonTemplate" text="TEST3" id="3">
-				<Anchors>
-					<Anchor point="TOP" relativeto="$parentAHItemsFound" relativePoint="BOTTOM"/>
-					<Anchor point="RIGHT" relativeTo="$parent" x="-7"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound2" inherits="PPPListButtonTemplate" text="TEST2" id="2">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentAHItemFound3" relativePoint="TOPLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound1" inherits="PPPListButtonTemplate" text="TEST" id="1">
-				<Anchors>
-					<Anchor point="TOPRIGHT" relativeTo="$parentAHItemFound2" relativePoint="TOPLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound4" inherits="PPPListButtonTemplate" text="TEST4" id="4">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound1" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound5" inherits="PPPListButtonTemplate" text="TEST5" id="5">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound4" relativePoint="TOPRIGHT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound6" inherits="PPPListButtonTemplate" text="TEST6" id="6">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound5" relativePoint="TOPRIGHT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound7" inherits="PPPListButtonTemplate" text="TEST7" id="7">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound4" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound8" inherits="PPPListButtonTemplate" text="TEST8" id="8">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound7" relativePoint="TOPRIGHT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFound9" inherits="PPPListButtonTemplate" text="TEST9" id="9">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound8" relativePoint="TOPRIGHT"/>
-				</Anchors>
-			</Button>
-			<Button name="$parentAHItemFoundPrevious" inherits="PPPListButtonTemplate" text="&lt;" hidden="false">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound7" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PPPUpdateAHFoundItemsPage(-1)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentAHItemFoundNext" inherits="PPPListButtonTemplate" text="&gt;" hidden="false">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFound9" relativePoint="BOTTOMLEFT"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PPPUpdateAHFoundItemsPage(1)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentAHItemFoundMassiveSaveNext" inherits="PPPListButtonTemplate" text="&gt;" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFoundNext" relativePoint="BOTTOMLEFT" y="-125"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PPPUpdateAHFoundItemsPage(2)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentAHItemFoundMassiveSavePrevious" inherits="PPPListButtonTemplate" text="&lt;" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" relativeTo="$parentAHItemFoundPrevious" relativePoint="BOTTOMLEFT" y="-125"/>
-				</Anchors>
-				<Scripts>
-					<OnClick>
-						PPPUpdateAHFoundItemsPage(-2)
-					</OnClick>
-				</Scripts>
-			</Button>
-			<Button name="$parentReloadAHData" inherits="PPPButtonTemplate" text="Reload AH Data">
-				<Size x="25" y="25"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-7"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetNormalTexture(135860)
-					</OnLoad>
-					<OnClick>
-						PPPDebugButtonScanNewAHList()
-					</OnClick>
-				</Scripts>
-			</Button>
-		</Frames>
-		<Layers>
-			<Layer name="OVERLAY">
-				<FontString name="$parentAHItemsFoundPageNumber" inherits="GameFontNormal" text="0">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentAHItemFoundPrevious" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentAHItemFoundNext" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentAHItemsFoundMassivePageNumber" inherits="GameFontNormal" text="">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentAHItemFoundMassiveSavePrevious" relativePoint="TOPRIGHT"/>
-						<Anchor point="BOTTOMRIGHT" relativeTo="$parentAHItemFoundMassiveSaveNext" relativePoint="BOTTOMLEFT"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentAHItemFoundInfoID" inherits="GameFontNormal" text="">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentAHItemFoundPrevious" relativePoint="BOTTOMLEFT" y="-7"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentAHItemFoundNext" relativePoint="BOTTOMRIGHT" y="-7"/>
-					</Anchors>
-				</FontString>
-				<FontString name="$parentAHItemFoundInfo" inherits="GameFontNormal" text="" justifyH="left">
-					<Color r="1" g="1" b="1"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentAHItemFoundInfoID" relativePoint="BOTTOMLEFT"/>
-						<Anchor point="TOPRIGHT" relativeTo="$parentAHItemFoundInfoID" relativePoint="BOTTOMRIGHT"/>
-					</Anchors>
-				</FontString>
-			</Layer>
-		</Layers>
-	</Frame>
+	<Include file="Debug/Debug.xml"/>
+	<Include file="Inscription/Milling.xml"/>
 	
 	<!-- the actual base tab -->
 	<Frame name="PPPBaseFrame" parent="UIParent" hidden="true" toplevel="true"  movable="true" frameStrata="MEDIUM" inherits="BasicFrameTemplate"
@@ -619,110 +353,8 @@
 			</Button>
 			<Frame name="$parentMillingFrame" inherits="PPPTabTemplate">
 				<Frames>
-					<Frame name="$parentMain" inherits="PPPInnerTabTemplate" id="1">
-						<Frames>
-							<Frame name="$parentPlant1" inherits="PPPMillingDefault"/>
-							<Frame name="$parentPlant2" inherits="PPPMillingDefault">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentPlant1" relativePoint="BOTTOMLEFT" y="-21"/>
-								</Anchors>
-							</Frame>
-							<Frame name="$parentPlant3" inherits="PPPMillingDefault">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentPlant2" relativePoint="BOTTOMLEFT" y="-21"/>
-								</Anchors>
-							</Frame>
-							<Frame name="$parentPlant4" inherits="PPPMillingDefault">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentPlant3" relativePoint="BOTTOMLEFT" y="-21"/>
-								</Anchors>
-							</Frame>
-							<Frame name="$parentPlant5" inherits="PPPMillingDefault">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentPlant4" relativePoint="BOTTOMLEFT" y="-21"/>
-								</Anchors>
-							</Frame>
-							<Frame name="$parentPlant6" inherits="PPPMillingDefault">
-								<Anchors>
-									<Anchor point="TOPLEFT" relativeTo="$parentPlant5" relativePoint="BOTTOMLEFT" y="-21"/>
-								</Anchors>
-							</Frame>
-						</Frames>
-					</Frame>
-					<Frame name="$parentLog" inherits="PPPInnerTabTemplate" id="2">
-						<Frames>
-							<Frame name="$parentEntry1" inherits="PPPMillingLogTemplate" id="1"/>
-							<Button name="$parentEntry2" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry1" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry3" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry2" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry4" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry3" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry5" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry4" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry6" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry5" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry7" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry6" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry8" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry7" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry9" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry8" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry10" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry9" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry11" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry10" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<Button name="$parentEntry12" inherits="PPPMillingLogTemplate" id="1">
-								<Anchors>
-									<Anchor relativeTo="$parentEntry11" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
-								</Anchors>
-							</Button>
-							<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" setAllPoints="true">
-								<Anchors>
-									<Anchor point="TOPLEFT"/>
-									<Anchor point="BOTTOMRIGHT" x="-30" y="0"/>
-								</Anchors>
-								<Scripts>
-									<OnVerticalScroll>
-										FauxScrollFrame_OnVerticalScroll(self, offset, 25, PPPScrollBarUpdate)
-									</OnVerticalScroll>
-									<OnShow>
-										PPPScrollBarUpdate()
-									</OnShow>
-								</Scripts>
-							</ScrollFrame>
-						</Frames>
-					</Frame>
+					<Frame name="$parentMain" inherits="PPPMillingFrameMainTemplate" id="1"/>
+					<Frame name="$parentLog" inherits="PPPMillingFrameLogTemplate" id="2"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentAlchemyFrame" inherits="PPPTabTemplate">

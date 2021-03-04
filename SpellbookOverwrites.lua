@@ -104,7 +104,9 @@ function PPPLineTab_OnClick(self)
 					local page = _G[PPPLineTabs[i].frames[j]]
 					if page then
 						-- update whatever info is needed
-						_G[PPPLineTabs[i].func]()
+						if _G[PPPLineTabs[i].func] then
+							_G[PPPLineTabs[i].func]()
+						end
 						
 						-- show it
 						page:Show()

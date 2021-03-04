@@ -70,6 +70,7 @@ PPPPigments = {
 	}
 }
 
+-- ALL THE INKS --
 PPPInks = {
 	[173059] = {
 		name="Luminous Ink",
@@ -138,3 +139,18 @@ PPPAlchemyCreations = {
 	}
 }
 PPPShadowlandsAlchemy = {171276, 171273,171278,307093}
+
+-- ALL THE INSCRIPTION CREATIONS --
+PPPInscriptionCreations = {
+	[173067] = {
+		name="Vantus Rune: Castle Nathria",
+		tech_name="VantusRuneCastleNathria",
+		file=3716924,
+		ingredients={
+			[173059]=10,
+			[173058]=10,
+			[175970]=1
+		}
+	}
+}
+PPPShadowlandsInscription = {173067}
