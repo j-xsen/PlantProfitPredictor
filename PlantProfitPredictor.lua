@@ -287,7 +287,7 @@ local function UpdateAlchemyPage()
 				local creation_id = CurrentAlchemy[i+alchemy_offset]
 				local creation_table = PPPAlchemyCreations[creation_id]
 				frame:Show()
-				_G[frame_name .. "PlantButton"]:SetNormalTexture(creation_table.file)
+				_G[frame_name .. "CreationButton"]:SetNormalTexture(creation_table.file)
 				local plant_button_text = creation_table.name
 				if PPPAuctionHistory.items[creation_id] then
 					if DEBUG_MASSIVE_SAVES then
@@ -300,7 +300,7 @@ local function UpdateAlchemyPage()
 						end
 					end
 				end
-				_G[frame_name .. "PlantButton"]:SetText(plant_button_text)
+				_G[frame_name .. "CreationButton"]:SetText(plant_button_text)
 				_G[frame_name .. "Name"]:SetText(creation_table.name)
 				local ah_all_ingredients_stored = StoredAHHasAllIngredients(creation_table)
 				local arrow_text = "|cffffff00Estimated cost to produce:|r"
@@ -373,12 +373,25 @@ local function UpdateAlchemyPage()
 		end
 	end
 end
-function PPPAlchemyChangePage(direction)
+local function PPPAlchemyChangePage(direction)
 	if current_alchemy_page+direction > 0 or current_alchemy_page+direction > #CurrentAlchemy/MAX_NUMBER_ALCHEMY_CREATIONS then
 		current_alchemy_page = current_alchemy_page+direction
 		UpdateAlchemyPage()
 	else
 		print("[PlantProfitPredictor] Invalid direction " .. direction)
+	end
+end
+local function PPPInscriptionChangePage(direction)
+	print("[PlantProfitPredictor] Change Inscription Page " .. direction)
+end
+
+function PPPChangePage(direction)
+	if PPPCurrentTab==2 then
+		PPPAlchemyChangePage(direction)
+	elseif PPPCurrentTab==3 then
+		
+	else
+		print("[PlantProfitPredictor] Invalid PPPCurrentTab " .. (PPPCurrentTab or "nil"))
 	end
 end
 
@@ -392,6 +405,9 @@ end
 function PPPGotoAlchemyPage()
 	-- stuff to do when going to alchemy page
 	UpdateAlchemyPage()
+end
+function PPPGotoInscriptionPage()
+	print("[PlantProfitPredictor] Going to Inscription Page!")
 end
 local DebugAHCurrentPage = 1
 local DebugAHMassiveSavesCurrentPage = 1

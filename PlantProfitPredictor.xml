@@ -22,12 +22,16 @@
 	<CheckButton name="PPPSkillLinetabTemplate" virtual="true" inherits="SpellBookSkillLineTabTemplate">
 		<Scripts>
 			<OnLoad>
-				self:SetNormalTexture(PPPLineTabs[self:GetID()].icon)
-				self.tooltip = PPPLineTabs[self:GetID()].name
-				self:Show();
+				if PPPLineTabs[self:GetID()] then
+					self:SetNormalTexture(PPPLineTabs[self:GetID()].icon)
+					self.tooltip = PPPLineTabs[self:GetID()].name
+					self:Show()
+				else
+					self:Hide()
+				end
 			</OnLoad>
 			<OnClick>
-				PPPLineTab_OnClick(self);
+				PPPLineTab_OnClick(self)
 			</OnClick>
 		</Scripts>
 	</CheckButton>
@@ -80,6 +84,11 @@
 			<CheckButton name="PPPLineTab3" parent="PPPBaseFrame" inherits="PPPSkillLinetabTemplate" id="3">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeTo="PPPLineTab2" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
+				</Anchors>
+			</CheckButton>
+			<CheckButton name="PPPLineTab4" parent="PPPBaseFrame" inherits="PPPSkillLinetabTemplate" id="4">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PPPLineTab3" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 				</Anchors>
 			</CheckButton>
 		</Frames>
@@ -136,7 +145,7 @@
 		</Layers>
 	</Button>
 	
-	<Button name="PPPAlchemyIngredient" virtual="true" inherits="PPPSmallButton" hidden="true">
+	<Button name="PPPCreationIngredientTemplate" virtual="true" inherits="PPPSmallButton" hidden="true">
 		<Layers>
 			<Layer name="OVERLAY">
 				<FontString name="$parentCount" inherits="GameFontNormal" text="0">
@@ -272,45 +281,44 @@
 		</Frames>
 	</Button>
 	
-	<Frame name="PPPAlchemyCreationTemplate" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
+	<Frame name="PPPCreationTemplate" virtual="true" toplevel="true" hidden="true" mouseEnabled="true">
 		<Size x="45" y="45"/>
 		<Anchors>
 			<Anchor point="TOPLEFT" x="0" y="0"/>
 		</Anchors>
 		<Frames>
-			<Button name="$parentPlantButton" inherits="PPPPlantButton"/>
+			<Button name="$parentCreationButton" inherits="PPPPlantButton"/>
 			<Button name="$parentArrow" inherits="PPPArrowButton">
 				<Anchors>
-					<Anchor point="LEFT" x="225" />
+					<Anchor point="LEFT" x="225"/>
 				</Anchors>
 			</Button>
-			
-			<Button name="$parentIngredientButton1" inherits="PPPAlchemyIngredient">
+			<Button name="$parentIngredientButton1" inherits="PPPCreationIngredientTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" y="-8"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentIngredientButton2" inherits="PPPAlchemyIngredient">
+			<Button name="$parentIngredientButton2" inherits="PPPCreationIngredientTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentIngredientButton1" relativePoint="RIGHT" x="15"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentIngredientButton3" inherits="PPPAlchemyIngredient">
+			<Button name="$parentIngredientButton3" inherits="PPPCreationIngredientTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentIngredientButton2" relativePoint="RIGHT" x="15"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentIngredientButton4" inherits="PPPAlchemyIngredient">
+			<Button name="$parentIngredientButton4" inherits="PPPCreationIngredientTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentIngredientButton3" relativePoint="RIGHT" x="15"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentIngredientButton5" inherits="PPPAlchemyIngredient">
+			<Button name="$parentIngredientButton5" inherits="PPPCreationIngredientTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentIngredientButton4" relativePoint="RIGHT" x="15"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentIngredientButton6" inherits="PPPAlchemyIngredient">
+			<Button name="$parentIngredientButton6" inherits="PPPCreationIngredientTemplate">
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentIngredientButton5" relativePoint="RIGHT" x="15"/>
 				</Anchors>
@@ -334,7 +342,7 @@
 		</Layers>
 	</Frame>
 	
-	<Frame name="PPPAlchemyCreationStripedTemplate" inherits="PPPAlchemyCreationTemplate" virtual="true">
+	<Frame name="PPPCreationStripedTemplate" inherits="PPPCreationTemplate" virtual="true">
 		<Layers>
 			<Layer name="OVERLAY">
 				<Texture name="$parentStripe">
@@ -348,6 +356,48 @@
 		</Layers>
 	</Frame>
 	
+	<Frame name="PPPBottomBarTemplate" virtual="true">
+		<Anchors>
+			<Anchor relativePoint="BOTTOMLEFT" point="TOPLEFT" y="30"/>
+			<Anchor relativePoint="BOTTOMRIGHT" point="TOPRIGHT" y="30"/>
+			<Anchor relativePoint="BOTTOMLEFT" point="BOTTOMLEFT"/>
+			<Anchor relativePoint="BOTTOMRIGHT" point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Frames>
+			<Button name="$parentButtonLeft" inherits="PPPListButtonTemplate" text="&lt;" hidden="false">
+				<Anchors>
+					<Anchor relativePoint="TOPLEFT"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PPPChangePage(-1)
+					</OnClick>
+				</Scripts>
+			</Button>
+			<Button name="$parentButtonRight" inherits="PPPListButtonTemplate" text="&gt;" hidden="false">
+				<Anchors>
+					<Anchor relativePoint="TOPRIGHT" point="TOPRIGHT" x="-6"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PPPChangePage(1)
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer name="OVERLAY">
+				<FontString name="$parentPageNumber" inherits="GameFontNormal" text="0">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentButtonLeft" relativePoint="TOPRIGHT"/>
+						<Anchor point="BOTTOMRIGHT" relativeTo="$parentButtonRight" relativePoint="BOTTOMLEFT"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
 	<!-- Template for each tab -->
 	<Frame name="PPPTabTemplate" virtual="true" hidden="true" setAllPoints="true">
 		<Anchors>
@@ -357,6 +407,28 @@
 	</Frame>
 	
 	<Frame name="PPPInnerTabTemplate" virtual="true" hidden="true" setAllPoints="true"/>
+	
+	<Frame name="PPPFourCreationsTemplate" virtual="true" inherits="PPPInnerTabTemplate">
+		<Frames>
+			<Frame name="$parentCreation1" inherits="PPPCreationTemplate"/>
+			<Frame name="$parentCreation2" inherits="PPPCreationStripedTemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentCreation1" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentCreation3" inherits="PPPCreationTemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentCreation2" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentCreation4" inherits="PPPCreationStripedTemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentCreation3" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentBottomBar" inherits="PPPBottomBarTemplate"/>
+		</Frames>
+	</Frame>
 	
 	<!-- not really much of a template... kind of just the whole thing -->
 	<Frame name="PPPDebugFrameTemplate" virtual="true" inherits="PPPInnerTabTemplate">
@@ -655,67 +727,12 @@
 			</Frame>
 			<Frame name="$parentAlchemyFrame" inherits="PPPTabTemplate">
 				<Frames>
-					<Frame name="$parentMain" inherits="PPPInnerTabTemplate">
-						<Frames>
-							<Frame name="$parentCreation1" inherits="PPPAlchemyCreationTemplate"/>
-							<Frame name="$parentCreation2" inherits="PPPAlchemyCreationStripedTemplate">
-								<Anchors>
-									<Anchor relativeTo="$parentCreation1" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
-								</Anchors>
-							</Frame>
-							<Frame name="$parentCreation3" inherits="PPPAlchemyCreationTemplate">
-								<Anchors>
-									<Anchor relativeTo="$parentCreation2" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
-								</Anchors>
-							</Frame>
-							<Frame name="$parentCreation4" inherits="PPPAlchemyCreationStripedTemplate">
-								<Anchors>
-									<Anchor relativeTo="$parentCreation3" relativePoint="BOTTOMLEFT" point="TOPLEFT" y="-42"/>
-								</Anchors>
-							</Frame>
-							<Frame name="$parentBottomBar">
-								<Anchors>
-									<Anchor relativePoint="BOTTOMLEFT" point="TOPLEFT" y="30"/>
-									<Anchor relativePoint="BOTTOMRIGHT" point="TOPRIGHT" y="30"/>
-									<Anchor relativePoint="BOTTOMLEFT" point="BOTTOMLEFT"/>
-									<Anchor relativePoint="BOTTOMRIGHT" point="BOTTOMRIGHT"/>
-								</Anchors>
-								<Frames>
-									<Button name="$parentButtonLeft" inherits="PPPListButtonTemplate" text="&lt;" hidden="false">
-										<Anchors>
-											<Anchor relativePoint="TOPLEFT"/>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PPPAlchemyChangePage(-1)
-											</OnClick>
-										</Scripts>
-									</Button>
-									<Button name="$parentButtonRight" inherits="PPPListButtonTemplate" text="&gt;" hidden="false">
-										<Anchors>
-											<Anchor relativePoint="TOPRIGHT" point="TOPRIGHT" x="-6"/>
-										</Anchors>
-										<Scripts>
-											<OnClick>
-												PPPAlchemyChangePage(1)
-											</OnClick>
-										</Scripts>
-									</Button>
-								</Frames>
-								<Layers>
-									<Layer name="OVERLAY">
-										<FontString name="$parentPageNumber" inherits="GameFontNormal" text="0">
-											<Color r="1" g="1" b="1"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" relativeTo="$parentButtonLeft" relativePoint="TOPRIGHT"/>
-												<Anchor point="BOTTOMRIGHT" relativeTo="$parentButtonRight" relativePoint="BOTTOMLEFT"/>
-											</Anchors>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</Frames>
-					</Frame>
+					<Frame name="$parentMain" inherits="PPPFourCreationsTemplate"/>
+				</Frames>
+			</Frame>
+			<Frame name="$parentInscriptionFrame" inherits="PPPTabTemplate">
+				<Frames>
+					<Frame name="$parentMain" inherits="PPPFourCreationsTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentDebugFrame" inherits="PPPTabTemplate">

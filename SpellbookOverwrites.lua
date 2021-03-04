@@ -1,12 +1,14 @@
 local MAX_NUMBER_INNER_TABS = 2
 
-local currentTab = nil
+PPPCurrentTab = nil
 
 PPPLineTabs = {
 	{name="Milling",icon=236229,frames={"PPPBaseFrameMillingFrame"},base_frame="PPPBaseFrameMillingFrame",func="PPPGotoPlantPage",
 	 inner_tabs={{frame="Main",text="Predictions"},{frame="Log",text="Log"}}},
 	--{name="Milling History",icon=236229,frames={"PPPBaseFrameMillingLogFrame"},func="PPPGotoMillingPage"},
 	{name="Alchemy",icon=136240,frames={"PPPBaseFrameAlchemyFrame"},base_frame="PPPBaseFrameAlchemyFrame",func="PPPGotoAlchemyPage",
+	 inner_tabs={{frame="Main",text="Creations"}}},
+	{name="Inscription",icon=237171,frames={"PPPBaseFrameInscriptionFrame"},base_frame="PPPBaseFrameInscriptionFrame",func="PPPGotoInscriptionPage",
 	 inner_tabs={{frame="Main",text="Creations"}}},
 	{name="Debug",icon=136243,frames={"PPPBaseFrameDebugFrame"},base_frame="PPPBaseFrameDebugFrame",func="PPPGotoDebugPage",
 	 inner_tabs={{frame="Main",text="Debug"}}},
@@ -26,16 +28,16 @@ local function ChangeInnerTab(new_page)
 	end
 	PanelTemplates_SelectTab(new_page)
 	if current_inner_tab ~= new_page_id then
-		if PPPLineTabs[currentTab].inner_tabs[current_inner_tab] then
-			old_inner_tab = _G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[current_inner_tab].frame]
+		if PPPLineTabs[PPPCurrentTab].inner_tabs[current_inner_tab] then
+			old_inner_tab = _G[PPPLineTabs[PPPCurrentTab].base_frame .. PPPLineTabs[PPPCurrentTab].inner_tabs[current_inner_tab].frame]
 			if old_inner_tab then
-				_G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[current_inner_tab].frame]:Hide()
+				_G[PPPLineTabs[PPPCurrentTab].base_frame .. PPPLineTabs[PPPCurrentTab].inner_tabs[current_inner_tab].frame]:Hide()
 			end
 		end
-		if PPPLineTabs[currentTab].inner_tabs[new_page_id] then
-			_G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[new_page_id].frame]:Show()
+		if PPPLineTabs[PPPCurrentTab].inner_tabs[new_page_id] then
+			_G[PPPLineTabs[PPPCurrentTab].base_frame .. PPPLineTabs[PPPCurrentTab].inner_tabs[new_page_id].frame]:Show()
 		else
-			print("[PlantProfitPredictor] Invalid inner_tab ID " .. new_page_id .. " for frame " .. PPPLineTabs[currentTab].base_frame)
+			print("[PlantProfitPredictor] Invalid inner_tab ID " .. new_page_id .. " for frame " .. PPPLineTabs[PPPCurrentTab].base_frame)
 		end
 	end
 	current_inner_tab = new_page_id
@@ -46,8 +48,8 @@ local function ResetTabs()
 		local current_tab = _G["PPPBaseFrameInnerTabButton" .. i]
 		PanelTemplates_DeselectTab(current_tab)
 		
-		if PPPLineTabs[currentTab].inner_tabs[i] then
-			current_tab:SetText(PPPLineTabs[currentTab].inner_tabs[i].text)
+		if PPPLineTabs[PPPCurrentTab].inner_tabs[i] then
+			current_tab:SetText(PPPLineTabs[PPPCurrentTab].inner_tabs[i].text)
 			current_tab:Show()
 		else
 			current_tab:Hide()
@@ -64,18 +66,18 @@ end
 local saved_position = {} -- saves what inner tab of a tab was last used
 function PPPLineTab_OnClick(self)
 	local id = self:GetID()
-	if ( currrentTab ~= id ) then
+	if ( PPPCurrentTab ~= id ) then
 		PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN)
 		
 		-- hide all inner tabs
-		if currentTab then
-			saved_position[currentTab] = current_inner_tab
-			for i=1,#PPPLineTabs[currentTab].inner_tabs do
-				_G[PPPLineTabs[currentTab].base_frame .. PPPLineTabs[currentTab].inner_tabs[i].frame]:Hide()
+		if PPPCurrentTab then
+			saved_position[PPPCurrentTab] = current_inner_tab
+			for i=1,#PPPLineTabs[PPPCurrentTab].inner_tabs do
+				_G[PPPLineTabs[PPPCurrentTab].base_frame .. PPPLineTabs[PPPCurrentTab].inner_tabs[i].frame]:Hide()
 			end
 		end
 		
-		currentTab = id
+		PPPCurrentTab = id
 		
 		for i=1,#PPPLineTabs do
 			if i ~= id then
@@ -125,8 +127,8 @@ function PPPLineTab_OnClick(self)
 	end
 	
 	ResetTabs()
-	if saved_position[currentTab] then
-		ChangeInnerTab(_G["PPPBaseFrameInnerTabButton" .. saved_position[currentTab]])
+	if saved_position[PPPCurrentTab] then
+		ChangeInnerTab(_G["PPPBaseFrameInnerTabButton" .. saved_position[PPPCurrentTab]])
 	else
 		ChangeInnerTab(PPPBaseFrameInnerTabButton1)
 	end
