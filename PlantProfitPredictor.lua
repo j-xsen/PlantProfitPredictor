@@ -3,11 +3,11 @@ local CurrentAlchemy = PPPShadowlandsAlchemy
 local MAX_NUMBER_MILLING_LIST = 12 -- max number of items displayed on the milling tab
 local MAX_NUMBER_PLANTS = 6 -- how many plants can be shown on the plant page at once
 local MAX_NUMBER_PIGMENTS = 3 -- how many pigments can be shown at once
-local MAX_NUMBER_ALCHEMY_CREATIONS = 2 -- how many alchemy creations can we show per page
+local MAX_NUMBER_ALCHEMY_CREATIONS = 4 -- how many alchemy creations can we show per page
 local MAX_NUMBER_ALCHEMY_INGREDIENTS = 6 -- how many alchemy ingredients can we show
 local MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH = 9 -- how many items found on the AH can we show per page
 local DEBUG_MASSIVE_SAVES = false -- this should NOT!! be used in production. archives every relevant ah entry
-local DEBUG_OPEN_ON_STARTUP = false -- should PPP open on startup?
+local DEBUG_OPEN_ON_STARTUP = true -- should PPP open on startup?
 
 local list_of_ah_items = {}
 for k,v in pairs(PPPPlants) do
@@ -258,6 +258,7 @@ local function StoredAHHasAllIngredients(creation)
 	return has_all
 end
 
+
 local current_alchemy_page = 1
 local function UpdateAlchemyPage()
 	UpdateInventory()
@@ -269,7 +270,6 @@ local function UpdateAlchemyPage()
 	else
 		PPPBaseFrameAlchemyFrameMainBottomBarButtonLeft:Enable()
 	end
-	print(#CurrentAlchemy .. " / " .. MAX_NUMBER_ALCHEMY_CREATIONS .. " = " .. (#CurrentAlchemy/MAX_NUMBER_ALCHEMY_CREATIONS))
 	if current_alchemy_page >= #CurrentAlchemy / MAX_NUMBER_ALCHEMY_CREATIONS then
 		PPPBaseFrameAlchemyFrameMainBottomBarButtonRight:Disable()
 	else
@@ -278,27 +278,31 @@ local function UpdateAlchemyPage()
 	
 	-- display creation info
 	local alchemy_offset = (current_alchemy_page * MAX_NUMBER_ALCHEMY_CREATIONS) - MAX_NUMBER_ALCHEMY_CREATIONS
-	for i=alchemy_offset+1,MAX_NUMBER_ALCHEMY_CREATIONS do
+	for i=1,MAX_NUMBER_ALCHEMY_CREATIONS do
 		--if i<= MAX_NUMBER_ALCHEMY_CREATIONS then
+		if i+alchemy_offset<=#CurrentAlchemy then
 			local frame_name = "PPPBaseFrameAlchemyFrameMainCreation" .. i
 			local frame = _G[frame_name]
 			if frame then
+				local creation_id = CurrentAlchemy[i+alchemy_offset]
+				local creation_table = PPPAlchemyCreations[creation_id]
 				frame:Show()
-				_G[frame_name .. "PlantButton"]:SetNormalTexture(PPPAlchemyCreations[CurrentAlchemy[i]].file)
-				local plant_button_text = PPPAlchemyCreations[CurrentAlchemy[i]].name
-				if PPPAuctionHistory.items[CurrentAlchemy[i]] then
+				_G[frame_name .. "PlantButton"]:SetNormalTexture(creation_table.file)
+				local plant_button_text = creation_table.name
+				if PPPAuctionHistory.items[creation_id] then
 					if DEBUG_MASSIVE_SAVES then
-						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(FindCheapest(CurrentAlchemy[i]))
+						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(FindCheapest(creation_id))
 					else
-						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]]))
-						if current_bag[CurrentAlchemy[i]] then
-							plant_button_text = plant_button_text .. "\n\n|cffffff00Estimated profits:\n"..GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[CurrentAlchemy[i]])*current_bag[CurrentAlchemy[i]])
+					
+						plant_button_text = plant_button_text .. "\n" .. GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[creation_id]))
+						if current_bag[creation_id] then
+							plant_button_text = plant_button_text .. "\n\n|cffffff00Estimated profits:\n"..GetFormattedGoldString(CostPerUnit(PPPAuctionHistory.items[creation_id])*current_bag[creation_id])
 						end
 					end
 				end
 				_G[frame_name .. "PlantButton"]:SetText(plant_button_text)
-				_G[frame_name .. "Name"]:SetText(PPPAlchemyCreations[CurrentAlchemy[i]].name)
-				local ah_all_ingredients_stored = StoredAHHasAllIngredients(PPPAlchemyCreations[CurrentAlchemy[i]])
+				_G[frame_name .. "Name"]:SetText(creation_table.name)
+				local ah_all_ingredients_stored = StoredAHHasAllIngredients(creation_table)
 				local arrow_text = "|cffffff00Estimated cost to produce:|r"
 				if not ah_all_ingredients_stored then
 					arrow_text = arrow_text .. "|cffffffffUNKNOWN|r"
@@ -308,7 +312,17 @@ local function UpdateAlchemyPage()
 				local ingredient_number = 1
 				local max_can_create = 0
 				local total_creation_cost = 0
-				for k,v in pairs(PPPAlchemyCreations[CurrentAlchemy[i]].ingredients) do
+				-- hide each ingredient
+				for j=1,MAX_NUMBER_ALCHEMY_INGREDIENTS do
+					local ingredient_frame_name = frame_name.."IngredientButton"..j
+					local frame = _G[ingredient_frame_name]
+					if frame then
+						_G[frame_name.."IngredientButton"..j]:Hide()
+					else
+						print("[PlantProfitPredictor] Could not locate frame " .. ingredient_frame_name)
+					end
+				end
+				for k,v in pairs(creation_table.ingredients) do
 					-- add to arrow
 					if ah_all_ingredients_stored then
 						local ingredient_cost = CostPerUnit(PPPAuctionHistory.items[k])*v
@@ -348,6 +362,23 @@ local function UpdateAlchemyPage()
 		--else
 		--	print("[PlantProfitPredictor] Too many recipes! I need more pages!")
 		--end
+		else
+			local frame_name = "PPPBaseFrameAlchemyFrameMainCreation" .. i
+			local frame = _G[frame_name]
+			if frame then
+				frame:Hide()
+			else
+				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)
+			end
+		end
+	end
+end
+function PPPAlchemyChangePage(direction)
+	if current_alchemy_page+direction > 0 or current_alchemy_page+direction > #CurrentAlchemy/MAX_NUMBER_ALCHEMY_CREATIONS then
+		current_alchemy_page = current_alchemy_page+direction
+		UpdateAlchemyPage()
+	else
+		print("[PlantProfitPredictor] Invalid direction " .. direction)
 	end
 end
 

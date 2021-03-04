@@ -686,6 +686,9 @@
 											<Anchor relativePoint="TOPLEFT"/>
 										</Anchors>
 										<Scripts>
+											<OnClick>
+												PPPAlchemyChangePage(-1)
+											</OnClick>
 										</Scripts>
 									</Button>
 									<Button name="$parentButtonRight" inherits="PPPListButtonTemplate" text="&gt;" hidden="false">
@@ -693,6 +696,9 @@
 											<Anchor relativePoint="TOPRIGHT" point="TOPRIGHT" x="-6"/>
 										</Anchors>
 										<Scripts>
+											<OnClick>
+												PPPAlchemyChangePage(1)
+											</OnClick>
 										</Scripts>
 									</Button>
 								</Frames>
