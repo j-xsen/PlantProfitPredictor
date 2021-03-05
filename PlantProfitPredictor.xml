@@ -3,7 +3,6 @@
 	<Script file="SpellbookOverwrites.lua"/>
 	<Script file="PPPTables.lua"/>
 	<Script file="PlantProfitPredictor.lua"/>
-	<Script file="Bags/Bags.lua"/>
 	<!--
 	<Script file="PaperDollOverwrites.lua"/>
 	<Button name="PPPPaperDollSidebarTabTemplate" virtual="true" inherits="PaperDollSidebarTabTemplate">
@@ -284,7 +283,11 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PPPChangePage(-1)
+						if _G[PPPBottomBarFunctions[PPPCurrentTab]] then
+							_G[PPPBottomBarFunctions[PPPCurrentTab]](-1)
+						else
+							print("[PlantProfitPredictor] No PPPBottomBarFunctions found for " .. PPPCurrentTab)
+						end
 					</OnClick>
 				</Scripts>
 			</Button>
@@ -294,7 +297,14 @@
 				</Anchors>
 				<Scripts>
 					<OnClick>
-						PPPChangePage(1)
+						if _G[PPPBottomBarFunctions[PPPCurrentTab]] then
+							_G[PPPBottomBarFunctions[PPPCurrentTab]](1)
+						else
+							print("[PlantProfitPredictor] No PPPBottomBarFunctions found for " .. PPPCurrentTab)
+							for k,v in pairs(PPPBottomBarFunctions) do
+								print("k " .. k .. " / v " .. v)
+							end
+						end
 					</OnClick>
 				</Scripts>
 			</Button>

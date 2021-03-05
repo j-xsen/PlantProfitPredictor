@@ -7,6 +7,12 @@
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="Icon"/>
+				<FontString name="$parentCount" parentKey="Count" justifyH="RIGHT" inherits="GameFontNormal" text="">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="BOTTOMRIGHT" x="-2"/>
+					</Anchors>
+				</FontString>
 			</Layer>
 		</Layers>
 		<Scripts>
@@ -111,11 +117,19 @@
 					<Anchor relativeTo="$parentRow4" relativePoint="BOTTOM" point="BOTTOM" y="-50"/>
 				</Anchors>
 			</Frame>
-			<Frame name="$parentRow6" inherits="PPPBagsRowRemplate">
+			<Frame name="$parentBottomBar" inherits="PPPBottomBarTemplate">
 				<Anchors>
-					<Anchor relativeTo="$parentRow5" relativePoint="BOTTOM" point="TOP"/>
+					<Anchor relativeTo="$parentRow5" relativePoint="BOTTOMLEFT" point="TOPLEFT" x="17"/>
+					<Anchor relativeTo="$parentRow5" relativePoint="BOTTOMRIGHT" point="TOPRIGHT" x="-22"/>
+					<Anchor relativeTo="$parentRow5" relativePoint="BOTTOMLEFT" point="BOTTOMLEFT" x="17" y="-30"/>
+					<Anchor relativeTo="$parentRow5" relativePoint="BOTTOMRIGHT" point="BOTTOMRIGHT" x="-22" y="-30"/>
 				</Anchors>
 			</Frame>
+			<Button name="$parentResetBag" inherits="PPPListButtonTemplate" text="Reset Bag" hidden="false">
+				<Anchors>
+					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
+				</Anchors>
+			</Button>
 		</Frames>
 	</Frame>
 </Ui>

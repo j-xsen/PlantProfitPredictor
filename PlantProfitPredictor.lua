@@ -15,6 +15,8 @@ for k,v in pairs(PPPInscriptionCreations) do
 	PPPListOfAHItems[k]=true
 end
 
+PPPBottomBarFunctions = {[2]="PPPInscriptionChangePage",[3]="PPPAlchemyChangePage",[4]="PPPBagsChangePage"}
+
 function PPPFindXsInBag(list)
 	local total = {}
 	for k,v in pairs(list) do
@@ -33,7 +35,7 @@ function PPPFindXsInBag(list)
 	return total
 end
 
-local edited_bag = false
+PPPEditedBag = false
 local function PPPEditBag(objs)
 	for i=1,#objs do
 		PPPCurrentBag[objs[i].id]=PPPCurrentBag[objs[i].id]+objs[i].amount
@@ -73,15 +75,15 @@ local last_bag = {}
 function PPPUpdateInventory()
 	last_bag = PPPCurrentBag
 	
-	if not edited_bag then
+	if not PPPEditedBag then
 		PPPCurrentBag = PPPFindXsInBag(PPPListOfAHItems)
 	end
 	
 	-- check for any differences
 	if PPPCurrentlyMilling then
-		if edited_bag then
+		if PPPEditedBag then
 			PPPCurrentBag=PPPFindXsInBag(PPPListOfAHItems)
-			edited_bag=false
+			PPPEditedBag=false
 		end
 		for id, count in pairs(PPPCurrentBag) do
 			if last_bag[id] ~= count then
@@ -116,17 +118,6 @@ function PPPStoredAHHasAllIngredients(creation)
 	end
 	return has_all
 end
-
-function PPPChangePage(direction)
-	if PPPCurrentTab==3 then
-		PPPAlchemyChangePage(direction)
-	elseif PPPCurrentTab==2 then
-		PPPInscriptionChangePage(direction)
-	else
-		print("[PlantProfitPredictor] Invalid PPPCurrentTab " .. (PPPCurrentTab or "nil"))
-	end
-end
-
 
 local function ToggleFrame()
 	if PPPBaseFrame:IsVisible() then
@@ -192,23 +183,38 @@ local function ScanNewAHList()
 	end
 end
 
+function PPPBottomBarButtons(frame_name, current_page,max_pages)
+	if current_page == 1 then
+		_G[frame_name.."BottomBarButtonLeft"]:Disable()
+	else
+		_G[frame_name.."BottomBarButtonLeft"]:Enable()
+	end
+	if current_page>=max_pages then
+		_G[frame_name.."BottomBarButtonRight"]:Disable()
+	else
+		_G[frame_name.."BottomBarButtonRight"]:Enable()
+	end
+	_G[frame_name.."BottomBarPageNumber"]:SetText(current_page)
+end
+
 local max_number_creations = 4
 local max_number_ingredients = 6
 function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_table)
 	PPPUpdateInventory()
 	
 	-- bottom bar stuff
-	if current_page == 1 then
-		_G[frame_name.."BottomBarButtonLeft"]:Disable()
-	else
-		_G[frame_name.."BottomBarButtonLeft"]:Enable()
-	end
-	if current_page>=#current_table/max_number_creations then
-		_G[frame_name.."BottomBarButtonRight"]:Disable()
-	else
-		_G[frame_name.."BottomBarButtonRight"]:Enable()
-	end
-	_G[frame_name.."BottomBarPageNumber"]:SetText(current_page)
+	PPPBottomBarButtons(frame_name, current_page, #current_table/max_number_creations)
+	-- if current_page == 1 then
+		-- _G[frame_name.."BottomBarButtonLeft"]:Disable()
+	-- else
+		-- _G[frame_name.."BottomBarButtonLeft"]:Enable()
+	-- end
+	-- if current_page>=#current_table/max_number_creations then
+		-- _G[frame_name.."BottomBarButtonRight"]:Disable()
+	-- else
+		-- _G[frame_name.."BottomBarButtonRight"]:Enable()
+	-- end
+	-- _G[frame_name.."BottomBarPageNumber"]:SetText(current_page)
 	
 	local offset = (current_page * max_number_creations) - max_number_creations
 	for i=1,max_number_creations do

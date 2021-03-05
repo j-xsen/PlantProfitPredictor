@@ -1,4 +1,4 @@
-local MAX_NUMBER_ROWS = 6
+local MAX_NUMBER_ROWS = 5
 local MAX_NUMBER_COLS = 9
 
 
@@ -7,6 +7,7 @@ function PPPBags_OnLoad(self)
 	self.Count:SetText(5)
 end
 
+local current_bags_page = 1
 function PPPGotoBagsPage()
 	PPPUpdateInventory()
 	
@@ -16,12 +17,20 @@ function PPPGotoBagsPage()
 			ordered_bag[#ordered_bag+1]=k
 		end
 	end
+
+	PPPBottomBarButtons("PPPBaseFrameBagsFrameMain", current_bags_page, #ordered_bag/(MAX_NUMBER_ROWS*MAX_NUMBER_COLS))
+	
+	if PPPEditedBag then
+		PPPBaseFrameBagsFrameMainResetBag:Show()
+	elseif PPPBaseFrameBagsFrameMainResetBag:IsShown() then
+		PPPBaseFrameBagsFrameMainResetBag:Hide()
+	end
 	
 	for i=1,MAX_NUMBER_ROWS do
 		for j=1,MAX_NUMBER_COLS do
 		
 			-- offset
-			local current_index = ((i*MAX_NUMBER_COLS)-MAX_NUMBER_COLS)+j
+			local current_index = (((i*MAX_NUMBER_COLS)-MAX_NUMBER_COLS)+j)+(((MAX_NUMBER_COLS*MAX_NUMBER_ROWS)*current_bags_page)-(MAX_NUMBER_COLS*MAX_NUMBER_ROWS))
 			local current_id = ordered_bag[current_index]
 			
 			local frame = _G["PPPBaseFrameBagsFrameMainRow"..i..j]
@@ -44,11 +53,15 @@ function PPPGotoBagsPage()
 						print("[PlantProfitPredictor] Could not locate a current_table for ID " .. current_id)
 					end
 					
+					frame.Count:SetText(PPPCurrentBag[current_id])
 					frame.EmptyBackground:Hide()
 					--frame:SetNormalTexture(current_table[current_id].file)
 					frame.Icon:SetTexture(current_table[current_id].file)
 					frame:SetText(current_table[current_id].name)
 				else
+					if frame.Count:GetText()~=""then
+						frame.Count:SetText("")
+					end
 					--frame.EmptyBackground:Show()
 					--frame:SetNormalTexture("Interface\\AuctionFrame\\AuctionHouse\\auctionhouse-itemicon-empty")
 				end
@@ -56,5 +69,14 @@ function PPPGotoBagsPage()
 				print("[PlantProfitPredictor] Could not locate frame PPPBaseFrameBagsFrameMainRow" .. i .. j)
 			end
 		end
+	end
+end
+
+function PPPBagsChangePage(direction)
+	if current_bags_page+direction > 0 or current_bags_page+direction > #PPPCurrentBag/(MAX_NUMBER_COLS*MAX_NUMBER_COLS) then
+		current_bags_page = current_bags_page+direction
+		PPPGotoBagsPage()
+	else
+		print("[PlantProfitPredictor] Invalid direction " .. direction)
 	end
 end

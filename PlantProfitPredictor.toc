@@ -10,3 +10,4 @@ Settings/Debug.lua
 Alchemy/Alchemy.lua
 Inscription/Milling.lua
 Inscription/Creations.lua
+Bags/Bags.lua
