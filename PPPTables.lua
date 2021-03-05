@@ -132,7 +132,7 @@ PPPAlchemyCreations = {
 			[168589] = 3,
 		},
 	},
-	[307093] = {
+	[171270] = {
 		name="Potion of Spectral Agility",
 		tech_name="PotionOfSpectralIntellect",
 		file=3566835,
@@ -140,7 +140,7 @@ PPPAlchemyCreations = {
 			[168583] = 5
 		}
 	},
-	[171274]={
+	[171274] = {
 		name="Potion of Spectral Stamina",
 		tech_name="PotionOfSpectralStamina",
 		file=3566837,
@@ -149,7 +149,7 @@ PPPAlchemyCreations = {
 		}
 	}
 }
-PPPShadowlandsAlchemy = {171276, 171273,171278,307093,171274}
+PPPShadowlandsAlchemy = {171276, 171273,171278,171270,171274}
 
 -- ALL THE INSCRIPTION CREATIONS --
 PPPInscriptionCreations = {
@@ -158,10 +158,69 @@ PPPInscriptionCreations = {
 		tech_name="VantusRuneCastleNathria",
 		file=3716924,
 		ingredients={
-			[173059]=10,
-			[173058]=10,
+			[173059]=10, -- luminous
+			[173058]=10, -- umbral
+			[175970]=1 -- tranquil
+		}
+	},
+	[173160]={
+		name="Missive of Haste",
+		tech_name="MissiveOfHaste",
+		file=3717598,
+		ingredients={
+			[173059]=6,
+			[173058]=4,
+			[175970]=1,
+		}
+	},
+	[173161]={
+		name="Missive of Critical Strike",
+		tech_name="MissiveOfCriticalStrike",
+		file=3717596,
+		ingredients={
+			[173059]=8,
+			[173058]=2,
 			[175970]=1
+		}
+	},
+	[173163]={
+		name="Missive of Versatility",
+		tech_name="MissiveOfVersatility",
+		file=3717599,
+		ingredients={
+			[173059]=2,
+			[173058]=8,
+			[175970]=1
+		}
+	},
+	[173162]={
+		name="Missive of Mastery",
+		tech_name="MissiveOfMastery",
+		file=3717603,
+		ingredients={
+			[173059]=4,
+			[173058]=6,
+			[175970]=1
+		}
+	},
+	[173048]={
+		name="Codex of the Still Mind",
+		tech_name="CodexOfTheStillMind",
+		file=3717417,
+		ingredients={
+			[173059]=7,
+			[173058]=7,
+			[175970]=1
+		}
+	},
+	[173049]={
+		name="Tome of the Still Mind",
+		tech_name="TomeOfTheStillMind",
+		file=3717418,
+		ingredients={
+			[173059]=3,
+			[173058]=3
 		}
 	}
 }
-PPPShadowlandsInscription = {173067}
+PPPShadowlandsInscription = {173067,173048,173049,173160,173161,173163,173162}

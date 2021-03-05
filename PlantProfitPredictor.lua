@@ -38,8 +38,12 @@ function PPPGetFormattedGoldString(starting)
 		local copper = starting % 100
 		local silver = math.floor(starting/1e2) % 100
 		local gold = math.floor(starting/1e4)
-		local return_string = "|cffffff00" .. gold .. "g|r |cffb5b5bd" .. silver .. "s|r |cffaf633e" .. copper .. "c|r"
-		return return_string
+		if starting<0 then
+			return "|cffff0000"..gold.."g "..silver.."s "..copper.."c|r"
+		else
+			local return_string = "|cffffff00" .. gold .. "g|r |cffb5b5bd" .. silver .. "s|r |cffaf633e" .. copper .. "c|r"
+			return return_string
+		end
 	else
 		print("[PlantProfitPredictor] Invalid starting!")
 		return nil
@@ -99,16 +103,11 @@ function PPPStoredAHHasAllIngredients(creation)
 	return has_all
 end
 
-
-local function PPPInscriptionChangePage(direction)
-	print("[PlantProfitPredictor] Change Inscription Page " .. direction)
-end
-
 function PPPChangePage(direction)
-	if PPPCurrentTab==2 then
+	if PPPCurrentTab==3 then
 		PPPAlchemyChangePage(direction)
-	elseif PPPCurrentTab==3 then
-		
+	elseif PPPCurrentTab==2 then
+		PPPInscriptionChangePage(direction)
 	else
 		print("[PlantProfitPredictor] Invalid PPPCurrentTab " .. (PPPCurrentTab or "nil"))
 	end
@@ -199,29 +198,36 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 	
 	local offset = (current_page * max_number_creations) - max_number_creations
 	for i=1,max_number_creations do
+		local arrow_text = ""
 		local index_frame_name = frame_name .. "Creation" .. i
 		local frame = _G[index_frame_name]
 		if frame then
 			if i+offset<=#current_table then
 				local creation_id = current_table[i+offset]
 				local creation_table = all_table[creation_id]
+				if not creation_table then
+					print("[PlantProfitPredictor] Invalid creation_table for creation_id " .. creation_id)
+					break
+				end
 				frame:Show()
 				_G[index_frame_name.."CreationButton"]:SetNormalTexture(creation_table.file)
+				local valid_auction_house = false
 				local plant_button_text = creation_table.name
 				if PPPAuctionHistory.items[creation_id] then
+					valid_auction_house = true
 					if DEBUG_MASSIVE_SAVES then
 						plant_button_text = plant_button_text .. "\n"..PPPGetFormattedGoldString(FindCheapest(creation_id))
 					else
 						plant_button_text=plant_button_text.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[creation_id]))
-						if PPPCurrentBag[creation_id] then
-							plant_button_text = plant_button_text .. "\n\n|cffffff00Estimated profits:\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[creation_id])*PPPCurrentBag[creation_id])
+						if PPPCurrentBag[creation_id] and PPPCurrentBag[creation_id] ~= 0 then
+							plant_button_text = plant_button_text .. "\n\n|cffffff00Estimated Profits From Current Bag:\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[creation_id])*PPPCurrentBag[creation_id])
 						end
 					end
 				end
 				_G[index_frame_name.."CreationButton"]:SetText(plant_button_text)
 				_G[index_frame_name.."Name"]:SetText(creation_table.name)
 				local ah_all_ingredients_stored = PPPStoredAHHasAllIngredients(creation_table)
-				local arrow_text = "|cffffff00Estimated cost to produce:|r"
+				arrow_text = "|cffffff00Estimated cost to produce:|r"
 				if not ah_all_ingredients_stored then
 					arrow_text = arrow_text .. "|cffffffffUNKNOWN|r"
 				end
@@ -241,19 +247,51 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 				local ingredient_number = 1
 				local max_can_create = 0
 				local total_creation_cost = 0
+				local appended_arrow_text = ""
+				local total_alt_creation_cost = 0
+				local cost_for_one = 0
+				local cost_for_one_alt = 0
 				for k,v in pairs(creation_table.ingredients) do
 					-- add to arrow
 					if ah_all_ingredients_stored then
 						local ingredient_cost = PPPCostPerUnit(PPPAuctionHistory.items[k])*v
+						local required_amount = v-PPPCurrentBag[k]
+						
 						if PPPPlants[k] then
+							if required_amount > 0 then
+								cost_for_one = cost_for_one + PPPCostPerUnit(PPPAuctionHistory.items[k])*(required_amount)
+							end
 							arrow_text = arrow_text .."\n".. PPPPlants[k].name .. ": " .. PPPGetFormattedGoldString(ingredient_cost)
+						
 						elseif PPPInks[k] then
-							arrow_text = arrow_text .."\n".. PPPInks[k].name .. ": " .. PPPGetFormattedGoldString(ingredient_cost)
+							-- find cost_for_one
+							required_amount = v-(PPPCurrentBag[k]+PPPCurrentBag[PPPInks[k].pigment])
+							if required_amount > 0 then
+								local cheaper_ingredient = nil
+								if PPPCostPerUnit(PPPAuctionHistory.items[k]) > PPPCostPerUnit(PPPAuctionHistory.items[PPPInks[k].pigment]) then
+									cheaper_ingredient = PPPInks[k].pigment
+								else
+									cheaper_ingredient = k
+								end
+								cost_for_one = cost_for_one + (PPPCostPerUnit(PPPAuctionHistory.items[cheaper_ingredient])*required_amount)
+							end
+							-- arrow text
+							arrow_text = arrow_text .."\n"..PPPInks[k].name..": "..PPPGetFormattedGoldString(ingredient_cost)
+							local alt_ingredient_cost = PPPCostPerUnit(PPPAuctionHistory.items[PPPInks[k].pigment])*v
+							if ingredient_number == 1 then
+								appended_arrow_text=appended_arrow_text.."\n"
+							end
+							appended_arrow_text=appended_arrow_text.."\n"..PPPPigments[PPPInks[k].pigment].name..": "..PPPGetFormattedGoldString(alt_ingredient_cost)
+							total_alt_creation_cost = total_alt_creation_cost+alt_ingredient_cost
 						end
+						
 						total_creation_cost = total_creation_cost + ingredient_cost
 					end
 					
 					local can_create_with_this_ingredient = math.floor(PPPCurrentBag[k] / v)
+					if PPPInks[k] then
+						can_create_with_this_ingredient = math.floor((PPPCurrentBag[k]+PPPCurrentBag[PPPInks[k].pigment]) / v)
+					end
 					if ingredient_number == 1 or can_create_with_this_ingredient < max_can_create then
 						max_can_create = can_create_with_this_ingredient
 					end
@@ -264,12 +302,12 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 							ingredient_frame:Show()
 							if PPPPlants[k] then
 								ingredient_frame:SetNormalTexture(PPPPlants[k].file)
-								ingredient_frame:SetText(PPPPlants[k].name .. "\n|cffffffffTotal in bags: " .. PPPCurrentBag[k] .. "|r")
+								ingredient_frame:SetText(PPPPlants[k].name .."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[k])).."\n|cffffffffTotal in bags: " .. PPPCurrentBag[k] .. "|r")
 							elseif PPPInks[k] then
 								ingredient_frame:SetNormalTexture(PPPInks[k].file)
 								local pigment_id = PPPInks[k].pigment
-								ingredient_frame:SetText(PPPInks[k].name.."\n|cffffffffTotal in bags: "..PPPCurrentBag[k] .."|r\n\n"..
-														 PPPPigments[pigment_id].name.."\n|cffffffffTotal in bags: "..PPPCurrentBag[pigment_id])
+								ingredient_frame:SetText(PPPInks[k].name.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[k])).."\n|cffffffffTotal in bags: "..PPPCurrentBag[k] .."|r\n\n"..
+														 PPPPigments[pigment_id].name.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[pigment_id])).."\n|cffffffffTotal in bags: "..PPPCurrentBag[pigment_id])
 							end
 							_G[ingredient_frame_name .. "Count"]:SetText(v)
 							_G[ingredient_frame_name .. "TimesCanCreate"]:SetText(can_create_with_this_ingredient)
@@ -281,10 +319,31 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 						print("[PlantProfitPredictor] I'm not equipped to handle that many ingredients!")
 					end
 				end
-				if ah_all_ingredients_stored then
-					arrow_text = arrow_text .. "\n\nTotal: " .. PPPGetFormattedGoldString(total_creation_cost)
+				arrow_text = arrow_text..appended_arrow_text
+				if valid_auction_house then
+					if ah_all_ingredients_stored then
+						if all_table == PPPInscriptionCreations then
+							arrow_text = arrow_text .. "\n\nTotal with Inks: " .. PPPGetFormattedGoldString(total_creation_cost)
+							arrow_text = arrow_text.."\nTotal with Pigments: "..PPPGetFormattedGoldString(total_alt_creation_cost)
+						else
+							arrow_text = arrow_text .. "\n\nTotal: " .. PPPGetFormattedGoldString(total_creation_cost)
+						end
+					end
+					arrow_text = arrow_text.."\n\n|cffffff00Estimated profits from bags:\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[creation_id])*max_can_create)
+					_G[index_frame_name .. "Arrow"]:SetText(arrow_text)
+					if PPPAuctionHistory.items[creation_id] then
+						if total_alt_creation_cost ~= 0 and total_alt_creation_cost < total_creation_cost then
+							_G[index_frame_name.."Profit"]:SetText("Sale Price - Crafting Cost:\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[creation_id])-total_alt_creation_cost))
+						else
+							_G[index_frame_name.."Profit"]:SetText("Sale Price - Crafting Cost:\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[creation_id])-total_creation_cost))
+						end
+						_G[index_frame_name.."CostForOne"]:SetText("Crafting Cost - Current Bags:\n"..PPPGetFormattedGoldString(cost_for_one))
+					end
+				else
+					_G[index_frame_name .. "Arrow"]:SetText(arrow_text)
+					_G[index_frame_name.."Profit"]:SetText("Sale Price - Crafting Cost:\n|cffff0000???|r")
+					_G[index_frame_name.."CostForOne"]:SetText("Crafting Cost - Current Bags:\n|cffff0000???|r")
 				end
-				_G[index_frame_name .. "Arrow"]:SetText(arrow_text)
 				can_create_frame = _G[index_frame_name .. "TimesCanCreate"]:SetText("x" .. max_can_create)
 			else
 				frame:Hide()

@@ -4,7 +4,6 @@ local MAX_NUMBER_ALCHEMY_INGREDIENTS = 6 -- how many alchemy ingredients can we 
 local CurrentAlchemy = PPPShadowlandsAlchemy
 
 local current_alchemy_page = 1
-
 function PPPAlchemyChangePage(direction)
 	if current_alchemy_page+direction > 0 or current_alchemy_page+direction > #CurrentAlchemy/MAX_NUMBER_ALCHEMY_CREATIONS then
 		current_alchemy_page = current_alchemy_page+direction

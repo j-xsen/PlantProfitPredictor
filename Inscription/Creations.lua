@@ -4,6 +4,14 @@ local MAX_NUMBER_INSCRIPTION_INGREDIENTS = 6 -- how many alchemy ingredients can
 local CurrentInscription = PPPShadowlandsInscription
 
 local current_inscription_page = 1
+function PPPInscriptionChangePage(direction)
+	if current_inscription_page+direction > 0 or current_inscription_page+direction > #CurrentInscription/MAX_NUMBER_INSCRIPTION_CREATIONS then
+		current_inscription_page = current_inscription_page+direction
+		PPPUpdateOffsetCreations("PPPBaseFrameInscriptionFrameMain",current_inscription_page,CurrentInscription,PPPInscriptionCreations)
+	else
+		print("[PlantProfitPredictor] Invalid direction " .. direction)
+	end
+end
 local function UpdateInscriptionPage()
 	PPPUpdateInventory()
 	
@@ -30,5 +38,6 @@ end
 
 function PPPGotoInscriptionPage()
 	-- UpdateInscriptionPage()
-	PPPUpdateOffsetCreations("PPPBaseFrameInscriptionFrameMain",current_inscription_page,CurrentInscription,PPPInscriptionCreations)
+	--PPPUpdateOffsetCreations("PPPBaseFrameInscriptionFrameMain",current_inscription_page,CurrentInscription,PPPInscriptionCreations)
+	PPPInscriptionChangePage(0)
 end
