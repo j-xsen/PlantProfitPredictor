@@ -133,7 +133,7 @@ function PPPUpdatePlantCountFrame()
 										local estimated_i_profit = math.floor(estimation_per_milling*possible_millings)*PPPCostPerUnit(PPPAuctionHistory.items[PPPPigments[pigment_item_id].ink])
 										estimated_ink_profit = estimated_ink_profit + estimated_i_profit
 										pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffd200"..PPPInks[PPPPigments[pigment_item_id].ink].name.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[PPPPigments[pigment_item_id].ink])))
-										pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffff00Estimated profits as inks:\n"..PPPGetFormattedGoldString(estimated_i_profit))
+										pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffff00Estimated profits as Inks:\n"..PPPGetFormattedGoldString(estimated_i_profit))
 									end
 								end
 								_G[pigment_frame_name .. "Count"]:SetText(string.format("%.1f",estimation_per_milling*possible_millings))
@@ -153,8 +153,8 @@ function PPPUpdatePlantCountFrame()
 					end
 				end
 				local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
-				local additional_text = "|r\n\n|cffffff00Estimated profits from pigments:|r\n|cffffffff" .. PPPGetFormattedGoldString(estimated_pigment_profit) .. "|r"..
-				                        "|r\n\n|cffffff00Estimated profits from inks:|r\n|cffffffff" .. PPPGetFormattedGoldString(estimated_ink_profit).."|r"
+				local additional_text = "|r\n\n|cffffff00Estimated profits from Pigments:|r\n|cffffffff" .. PPPGetFormattedGoldString(estimated_pigment_profit) .. "|r"..
+				                        "|r\n\n|cffffff00Estimated profits from Inks:|r\n|cffffffff" .. PPPGetFormattedGoldString(estimated_ink_profit).."|r"
 				_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. additional_text)
 			else
 				print("[PlantProfitPredictor] Could not locate frame " .. frame_name)

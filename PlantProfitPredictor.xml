@@ -348,7 +348,7 @@
 		</Frames>
 	</Frame>
 	
-	<Include file="Debug/Debug.xml"/>
+	<Include file="Settings/Debug.xml"/>
 	<Include file="Inscription/Milling.xml"/>
 	
 	<!-- the actual base tab -->
@@ -359,6 +359,14 @@
 			<Anchor point="CENTER"/>
 		</Anchors>
 		<Frames>
+			<!--
+			<CheckButton name="$parentCalculatorMode" inherits="UICheckButtonTemplate" hidden="false">
+				<Size x="23" y="23"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="-25"/>
+				</Anchors>
+			</CheckButton>
+			-->
 			<Button name="$parentInnerTabButton1" inherits="PPPTabButtonTemplate" hidden="false" id="1"/>
 			<Button name="$parentInnerTabButton2" inherits="PPPTabButtonTemplate" hidden="false" id="2">
 				<Anchors>
@@ -381,9 +389,10 @@
 					<Frame name="$parentMain" inherits="PPPFourCreationsTemplate"/>
 				</Frames>
 			</Frame>
-			<Frame name="$parentDebugFrame" inherits="PPPTabTemplate">
+			<Frame name="$parentSettingsFrame" inherits="PPPTabTemplate">
 				<Frames>
-					<Frame name="$parentMain" inherits="PPPDebugFrameTemplate"/>
+					<Frame name="$parentMain" inherits="PPPMillingFrameMainTemplate"/>
+					<Frame name="$parentDebug" inherits="PPPDebugFrameTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentTabs" inherits="PPPSidebarTemplate"/>
@@ -396,5 +405,24 @@
 				PlaySound(844)
 			</OnShow>
 		</Scripts>
+		<Layers>
+			<Layer name="OVERLAY">
+				<!--
+				<FontString name="$parentCalculatorModeText" inherits="GameFontNormal" text="Calculator Mode">
+					<Color r="1" g="0.823529" b="0"/>
+					<Anchors>
+						<Anchor point="RIGHT" relativeTo="$parentCalculatorMode" relativePoint="LEFT"/>
+					</Anchors>
+				</FontString>
+				-->
+				<FontString name="$parentName" inherits="GameFontNormal" justifyH="left" text="Plant Profit Predictor">
+					<Color r="1" g="0.823529" b="0"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" x="5"/>
+						<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT" y="-25"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

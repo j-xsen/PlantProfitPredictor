@@ -35,24 +35,24 @@ function PPPUpdateAHFoundItemsPage(direction)
 			local offset = new_page * MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH - MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH
 			while current_index <= MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH do
 				if ordered_found_ah_items[current_index + offset] then
-					_G["PPPBaseFrameDebugFrameMainAHItemFound" .. current_index]:SetText("[" .. ordered_found_ah_items[current_index+offset] .. "]")
-					_G["PPPBaseFrameDebugFrameMainAHItemFound" .. current_index]:Show()
+					_G["PPPBaseFrameSettingsFrameDebugAHItemFound" .. current_index]:SetText("[" .. ordered_found_ah_items[current_index+offset] .. "]")
+					_G["PPPBaseFrameSettingsFrameDebugAHItemFound" .. current_index]:Show()
 				else
-					_G["PPPBaseFrameDebugFrameMainAHItemFound" .. current_index]:Hide()
+					_G["PPPBaseFrameSettingsFrameDebugAHItemFound" .. current_index]:Hide()
 				end
 				current_index = current_index + 1
 			end
 			DebugAHCurrentPage = new_page
-			PPPBaseFrameDebugFrameMainAHItemsFoundPageNumber:SetText(DebugAHCurrentPage)
+			PPPBaseFrameSettingsFrameDebugAHItemsFoundPageNumber:SetText(DebugAHCurrentPage)
 			if DebugAHCurrentPage == 1 then
-				PPPBaseFrameDebugFrameMainAHItemFoundPrevious:Disable()
+				PPPBaseFrameSettingsFrameDebugAHItemFoundPrevious:Disable()
 			else
-				PPPBaseFrameDebugFrameMainAHItemFoundPrevious:Enable()
+				PPPBaseFrameSettingsFrameDebugAHItemFoundPrevious:Enable()
 			end
 			if offset + MAX_NUMBER_DEBUG_ITEMS_FOUND_ON_AH > #ordered_found_ah_items then
-				PPPBaseFrameDebugFrameMainAHItemFoundNext:Disable()
+				PPPBaseFrameSettingsFrameDebugAHItemFoundNext:Disable()
 			else
-				PPPBaseFrameDebugFrameMainAHItemFoundNext:Enable()
+				PPPBaseFrameSettingsFrameDebugAHItemFoundNext:Enable()
 			end
 		else
 			print("[PlantProfitPredictor] Invalid new_page " .. new_page)
@@ -72,18 +72,18 @@ function PPPUpdateAHFoundItemsPage(direction)
 						local info_text = "name: "..item[1].."\ncount: "..item[3].."\nminBid: "..item[8].."\nbuyoutPrice: "..item[10]..
 									  "\nbidAmount: "..item[11].."\nsaleStatus: "..item[16].."\nhasAllInfo: "..tostring(item[18])..
 									  "\nCost Per Unit: "..PPPCostPerUnit(item)
-						PPPBaseFrameDebugFrameMainAHItemFoundInfo:SetText(info_text)
+						PPPBaseFrameSettingsFrameDebugAHItemFoundInfo:SetText(info_text)
 						DebugAHMassiveSavesCurrentPage = new_page
-						PPPBaseFrameDebugFrameMainAHItemsFoundMassivePageNumber:SetText(DebugAHMassiveSavesCurrentPage)
+						PPPBaseFrameSettingsFrameDebugAHItemsFoundMassivePageNumber:SetText(DebugAHMassiveSavesCurrentPage)
 						if DebugAHMassiveSavesCurrentPage == 1 then
-							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSavePrevious:Disable()
+							PPPBaseFrameSettingsFrameDebugAHItemFoundMassiveSavePrevious:Disable()
 						else
-							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSavePrevious:Enable()
+							PPPBaseFrameSettingsFrameDebugAHItemFoundMassiveSavePrevious:Enable()
 						end
 						if PPPAuctionHistory.items[DebugAHCurrentFoundItem] and #PPPAuctionHistory.items[DebugAHCurrentFoundItem] <= DebugAHMassiveSavesCurrentPage then
-							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSaveNext:Disable()
+							PPPBaseFrameSettingsFrameDebugAHItemFoundMassiveSaveNext:Disable()
 						else
-							PPPBaseFrameDebugFrameMainAHItemFoundMassiveSaveNext:Enable()
+							PPPBaseFrameSettingsFrameDebugAHItemFoundMassiveSaveNext:Enable()
 						end
 					else
 						print("[PlantProfitPredictor] nil item on new_page " .. new_page)
@@ -114,19 +114,19 @@ function PPPAHFoundItemClicked(button)
 		if DEBUG_MASSIVE_SAVES then
 			DebugAHCurrentFoundItem = PPPAuctionHistory.items[ordered_found_ah_items[button_id+offset]][1][17]
 			DebugAHMassiveSavesCurrentPage=1
-			PPPBaseFrameDebugFrameMainAHItemFoundMassiveSaveNext:Show()
-			PPPBaseFrameDebugFrameMainAHItemFoundMassiveSavePrevious:Show()
-			PPPBaseFrameDebugFrameMainAHItemFoundInfoID:SetText("["..DebugAHCurrentFoundItem.."] x"..#PPPAuctionHistory.items[ordered_found_ah_items[button_id+offset]])
+			PPPBaseFrameSettingsFrameDebugAHItemFoundMassiveSaveNext:Show()
+			PPPBaseFrameSettingsFrameDebugAHItemFoundMassiveSavePrevious:Show()
+			PPPBaseFrameSettingsFrameDebugAHItemFoundInfoID:SetText("["..DebugAHCurrentFoundItem.."] x"..#PPPAuctionHistory.items[ordered_found_ah_items[button_id+offset]])
 			PPPUpdateAHFoundItemsPage(-5)
 		else
-			PPPBaseFrameDebugFrameMainAHItemFoundInfoID:SetText("["..ordered_found_ah_items[button_id+offset].."]")
+			PPPBaseFrameSettingsFrameDebugAHItemFoundInfoID:SetText("["..ordered_found_ah_items[button_id+offset].."]")
 			local item = PPPAuctionHistory.items[ordered_found_ah_items[button_id+offset]]
 			local info_text = "name: "..item[1].."\ncount: "..item[3].."\nminBid: "..item[8].."\nmidIncrement: "..item[9].."\nbuyoutPrice: "..item[10]..
 							  "\nbidAmount: "..item[11].."\nsaleStatus: "..item[16].."\nhasAllInfo: "..tostring(item[18])
 			local info_text = "name: "..item[1].."\ncount: "..item[3].."\nminBid: "..item[8].."\nbuyoutPrice: "..item[10]..
 							  "\nbidAmount: "..item[11].."\nsaleStatus: "..item[16].."\nhasAllInfo: "..tostring(item[18])..
 							  "\nCost Per Unit: "..PPPCostPerUnit(item)
-			PPPBaseFrameDebugFrameMainAHItemFoundInfo:SetText(info_text)
+			PPPBaseFrameSettingsFrameDebugAHItemFoundInfo:SetText(info_text)
 		end
 	else
 		print("[PlantProfitPredictor] Invalid ordered_found_ah_items: button_id=" .. button_id .. " offset=" .. offset)
@@ -138,23 +138,23 @@ function PPPGotoDebugPage()
 	
 	-- update last ah scan
 	if PPPAuctionHistory.time_of_query ~= nil then
-		PPPBaseFrameDebugFrameMainLastAHScanTime:SetText("Last Auction House scan: " .. PPPAuctionHistory.time_of_query)
+		PPPBaseFrameSettingsFrameDebugLastAHScanTime:SetText("Last Auction House scan: " .. PPPAuctionHistory.time_of_query)
 	else
-		PPPBaseFrameDebugFrameMainLastAHScanTime:SetText("Last Auction House scan: N/A")
+		PPPBaseFrameSettingsFrameDebugLastAHScanTime:SetText("Last Auction House scan: N/A")
 	end
-	PPPBaseFrameDebugFrameMainLastAHScanCount:SetText("Number of replicate items stored: " .. C_AuctionHouse.GetNumReplicateItems())
+	PPPBaseFrameSettingsFrameDebugLastAHScanCount:SetText("Number of replicate items stored: " .. C_AuctionHouse.GetNumReplicateItems())
 	
 	local ah_items_checked_text = "Items checked for on the AH:\n"
 	for k,v in pairs(PPPListOfAHItems) do
 		ah_items_checked_text = ah_items_checked_text .. "[" .. k .. "]\n"
 	end
-	PPPBaseFrameDebugFrameMainAHItemsChecked:SetText(ah_items_checked_text)
+	PPPBaseFrameSettingsFrameDebugAHItemsChecked:SetText(ah_items_checked_text)
 	
 	local count_of_found_items = 0
 	for k,v in pairs(PPPAuctionHistory.items) do
 		count_of_found_items = count_of_found_items + 1
 	end
-	PPPBaseFrameDebugFrameMainSavedItemsCount:SetText("Number of items stored in PPPAuctionHistory: " .. count_of_found_items)
+	PPPBaseFrameSettingsFrameDebugSavedItemsCount:SetText("Number of items stored in PPPAuctionHistory: " .. count_of_found_items)
 end
 
 function PPPDebugButtonScanNewAHList()

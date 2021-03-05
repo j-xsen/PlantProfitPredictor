@@ -10,8 +10,8 @@ PPPLineTabs = {
 	 inner_tabs={{frame="Main",text="Creations"}}},
 	{name="Alchemy",icon=136240,frames={"PPPBaseFrameAlchemyFrame"},base_frame="PPPBaseFrameAlchemyFrame",func="PPPGotoAlchemyPage",
 	 inner_tabs={{frame="Main",text="Creations"}}},
-	{name="Debug",icon=136243,frames={"PPPBaseFrameDebugFrame"},base_frame="PPPBaseFrameDebugFrame",func="PPPGotoDebugPage",
-	 inner_tabs={{frame="Main",text="Debug"}}},
+	{name="Debug",icon=136243,frames={"PPPBaseFrameSettingsFrame"},base_frame="PPPBaseFrameSettingsFrame",func="PPPGotoDebugPage",
+	 inner_tabs={{frame="Main",text="Settings"},{frame="Debug",text="Debug"}}},
 }
 
 local current_inner_tab = nil
