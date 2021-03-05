@@ -3,6 +3,7 @@
 	<Script file="SpellbookOverwrites.lua"/>
 	<Script file="PPPTables.lua"/>
 	<Script file="PlantProfitPredictor.lua"/>
+	<Script file="Bags/Bags.lua"/>
 	<!--
 	<Script file="PaperDollOverwrites.lua"/>
 	<Button name="PPPPaperDollSidebarTabTemplate" virtual="true" inherits="PaperDollSidebarTabTemplate">
@@ -96,6 +97,11 @@
 					<Anchor point="TOPLEFT" relativeTo="PPPLineTab3" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
 				</Anchors>
 			</CheckButton>
+			<CheckButton name="PPPLineTab5" parent="PPPBaseFrame" inherits="PPPSkillLinetabTemplate" id="5">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="PPPLineTab4" relativePoint="BOTTOMLEFT" x="0" y="-17"/>
+				</Anchors>
+			</CheckButton>
 		</Frames>
 		<Scripts>
 			<OnLoad>
@@ -105,21 +111,13 @@
 	</Frame>
 	
 	<!-- button template w/ tooltip -->
-	<Button name="PPPButtonTemplate" virtual="true" toplevel="true" mouseEnabled="true">
+	<Button name="PPPButtonTemplate" virtual="true" mouseEnabled="true">
 		<Scripts>
 			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", -8, 8)
-				if self:GetText() ~= nil then
-					GameTooltip:AddLine(self:GetText())
-				else
-					GameTooltip:AddLine("UNKNOWN")
-				end
-				GameTooltip:Show()
+				PPPButtonTemplate_OnEnter(self)
 			</OnEnter>
 			<OnLeave>
-				if GameTooltip:IsOwned(self) then
-					GameTooltip:Hide()
-				end
+				PPPButtonTemplate_OnLeave(self)
 			</OnLeave>
 		</Scripts>
 	</Button>
@@ -350,6 +348,7 @@
 	
 	<Include file="Settings/Debug.xml"/>
 	<Include file="Inscription/Milling.xml"/>
+	<Include file="Bags/Bags.xml"/>
 	
 	<!-- the actual base tab -->
 	<Frame name="PPPBaseFrame" parent="UIParent" hidden="true" toplevel="true"  movable="true" frameStrata="MEDIUM" inherits="BasicFrameTemplate"
@@ -387,6 +386,11 @@
 			<Frame name="$parentInscriptionFrame" inherits="PPPTabTemplate">
 				<Frames>
 					<Frame name="$parentMain" inherits="PPPFourCreationsTemplate"/>
+				</Frames>
+			</Frame>
+			<Frame name="$parentBagsFrame" inherits="PPPTabTemplate">
+				<Frames>
+					<Frame name="$parentMain" inherits="PPPBagsFrameMainTemplate"/>
 				</Frames>
 			</Frame>
 			<Frame name="$parentSettingsFrame" inherits="PPPTabTemplate">

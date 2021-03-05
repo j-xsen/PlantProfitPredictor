@@ -1,0 +1,121 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+	<Button name="PPPBagsItemTemplate" virtual="true" inherits="PPPPlantButton" hidden="false" text=" ">
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="EmptyBackground" atlas="auctionhouse-itemicon-empty"/>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="Icon"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if self:GetText() ~= " " then
+					PPPButtonTemplate_OnEnter(self)
+				end
+			</OnEnter>
+			<OnLeave>
+				if self:GetText() ~= " " then
+					PPPButtonTemplate_OnLeave(self)
+				end
+			</OnLeave>
+		</Scripts>
+	</Button>
+	
+	<Frame name="PPPBagsRowRemplate" virtual="true">
+		<Anchors>
+			<Anchor point="LEFT"/>
+			<Anchor point="RIGHT"/>
+			<Anchor point="TOP"/>
+			<Anchor point="BOTTOM" relativePoint="TOP" y="-60"/>
+		</Anchors>
+		<Frames>
+			<Button name="$parent1" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" x="18"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent2" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent1" x="5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent3" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent2" x="5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent4" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent3" x="5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent5" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent4" x="5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent6" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent5" x="5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent7" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent6" x="5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent8" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent7" x="5"/>
+				</Anchors>
+			</Button>
+			<Button name="$parent9" inherits="PPPBagsItemTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" relativeTo="$parent8" x="5"/>
+				</Anchors>
+			</Button>
+		</Frames>
+	</Frame>
+
+	<!-- main frame -->
+	<Frame name="PPPBagsFrameMainTemplate" inherits="PPPInnerTabTemplate" virtual="true">
+		<Frames>
+			<Frame name="$parentRow1" inherits="PPPBagsRowRemplate">
+				<Anchors>
+					<Anchor point="TOP" y="-10"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRow2" inherits="PPPBagsRowRemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentRow1" relativePoint="BOTTOM" point="TOP"/>
+					<Anchor relativeTo="$parentRow1" relativePoint="BOTTOM" point="BOTTOM" y="-50"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRow3" inherits="PPPBagsRowRemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentRow2" relativePoint="BOTTOM" point="TOP"/>
+					<Anchor relativeTo="$parentRow2" relativePoint="BOTTOM" point="BOTTOM" y="-50"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRow4" inherits="PPPBagsRowRemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentRow3" relativePoint="BOTTOM" point="TOP"/>
+					<Anchor relativeTo="$parentRow3" relativePoint="BOTTOM" point="BOTTOM" y="-50"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRow5" inherits="PPPBagsRowRemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentRow4" relativePoint="BOTTOM" point="TOP"/>
+					<Anchor relativeTo="$parentRow4" relativePoint="BOTTOM" point="BOTTOM" y="-50"/>
+				</Anchors>
+			</Frame>
+			<Frame name="$parentRow6" inherits="PPPBagsRowRemplate">
+				<Anchors>
+					<Anchor relativeTo="$parentRow5" relativePoint="BOTTOM" point="TOP"/>
+				</Anchors>
+			</Frame>
+		</Frames>
+	</Frame>
+</Ui>

@@ -6,11 +6,17 @@ PPPLineTabs = {
 	{name="Milling",icon=236229,frames={"PPPBaseFrameMillingFrame"},base_frame="PPPBaseFrameMillingFrame",func="PPPGotoPlantPage",
 	 inner_tabs={{frame="Main",text="Predictions"},{frame="Log",text="Log"}}},
 	--{name="Milling History",icon=236229,frames={"PPPBaseFrameMillingLogFrame"},func="PPPGotoMillingPage"},
+	
 	{name="Inscription",icon=237171,frames={"PPPBaseFrameInscriptionFrame"},base_frame="PPPBaseFrameInscriptionFrame",func="PPPGotoInscriptionPage",
 	 inner_tabs={{frame="Main",text="Creations"}}},
+	 
 	{name="Alchemy",icon=136240,frames={"PPPBaseFrameAlchemyFrame"},base_frame="PPPBaseFrameAlchemyFrame",func="PPPGotoAlchemyPage",
 	 inner_tabs={{frame="Main",text="Creations"}}},
-	{name="Debug",icon=136243,frames={"PPPBaseFrameSettingsFrame"},base_frame="PPPBaseFrameSettingsFrame",func="PPPGotoDebugPage",
+	 
+	{name="Bags",icon=133633,frames={"PPPBaseFrameBagsFrame"},base_frame="PPPBaseFrameBagsFrame",func="PPPGotoBagsPage",
+	 inner_tabs={{frame="Main",text="Bags"}}},
+	 
+	{name="Settings",icon=136243,frames={"PPPBaseFrameSettingsFrame"},base_frame="PPPBaseFrameSettingsFrame",func="PPPGotoDebugPage",
 	 inner_tabs={{frame="Main",text="Settings"},{frame="Debug",text="Debug"}}},
 }
 

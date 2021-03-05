@@ -377,6 +377,22 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 	end
 end
 
+function PPPButtonTemplate_OnEnter(self)
+	GameTooltip:SetOwner(self, "ANCHOR_TOPLEFT", -8, 8)
+	if self:GetText() ~= nil then
+		GameTooltip:AddLine(self:GetText())
+	else
+		GameTooltip:AddLine("UNKNOWN")
+	end
+	GameTooltip:Show()
+end
+
+function PPPButtonTemplate_OnLeave(self)
+	if GameTooltip:IsOwned(self) then
+		GameTooltip:Hide()
+	end
+end
+
 local first_query = false
 local delayed_yet = false
 local milled_waited_for_delay_yet = false
