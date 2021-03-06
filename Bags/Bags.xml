@@ -1,12 +1,22 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\..\FrameXML\UI.xsd">
-	<Button name="PPPBagsItemTemplate" virtual="true" inherits="PPPPlantButton" hidden="false" text=" ">
+	<Button name="PPPBagsItemTemplate" virtual="true" inherits="PPPPlantButton" hidden="false">
 		<Layers>
 			<Layer level="BACKGROUND">
 				<Texture parentKey="EmptyBackground" atlas="auctionhouse-itemicon-empty"/>
 			</Layer>
-			<Layer level="OVERLAY">
+			<Layer level="BORDER">
 				<Texture parentKey="Icon"/>
+			</Layer>
+			<Layer level="ARTWORK">
+				<Texture parentKey="IconPressed" file="Interface\Buttons\UI-Quickslot-Depress" hidden="true">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
 				<FontString name="$parentCount" parentKey="Count" justifyH="RIGHT" inherits="GameFontNormal" text="">
 					<Color r="1" g="1" b="1"/>
 					<Anchors>
@@ -15,17 +25,32 @@
 				</FontString>
 			</Layer>
 		</Layers>
+		<PushedTexture file="Interface\Buttons\UI-Quickslot-Depress">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</PushedTexture>
+		<HighlightTexture parentKey="Highlight" file="Interface\Buttons\ButtonHilight-Square" alphaMode="ADD">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Icon" relativePoint="TOPLEFT"/>
+				<Anchor point="BOTTOMRIGHT" relativeKey="$parent.Icon" relativePoint="BOTTOMRIGHT"/>
+			</Anchors>
+		</HighlightTexture>
 		<Scripts>
 			<OnEnter>
-				if self:GetText() ~= " " then
+				if self:GetText() then
 					PPPButtonTemplate_OnEnter(self)
 				end
 			</OnEnter>
 			<OnLeave>
-				if self:GetText() ~= " " then
+				if self:GetText() then
 					PPPButtonTemplate_OnLeave(self)
 				end
 			</OnLeave>
+			<OnClick>
+				PPPBagsItem_OnClick(self)
+			</OnClick>
 		</Scripts>
 	</Button>
 	
@@ -125,11 +150,32 @@
 					<Anchor relativeTo="$parentRow5" relativePoint="BOTTOMRIGHT" point="BOTTOMRIGHT" x="-22" y="-30"/>
 				</Anchors>
 			</Frame>
-			<Button name="$parentResetBag" inherits="PPPListButtonTemplate" text="Reset Bag" hidden="false">
+			<Button name="$parentResetBag" inherits="PPPListButtonTemplate" text="Reset Bag" hidden="true">
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 				</Anchors>
 			</Button>
+			<Button name="$parentResetSelected" inherits="PPPListButtonTemplate" text="Reset Selected" disabled="true" hidden="false">
+				<Size x="110" y="25"/>
+				<Anchors>
+					<Anchor point="BOTTOMLEFT" x="0" y="5"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PPPBagsResetSelected()
+					</OnClick>
+				</Scripts>
+			</Button>
 		</Frames>
+		<Layers>
+			<Layer name="OVERLAY">
+				<FontString name="$parentSelectedProfits" parentKey="SelectedProfits" justifyH="LEFT" inherits="GameFontNormal" text="Estimated profits from selected:">
+					<Color r="1" g="1" b="1"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativePoint="BOTTOMLEFT" relativeTo="$parentBottomBar" x="-2"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
 	</Frame>
 </Ui>

@@ -2,21 +2,70 @@ local MAX_NUMBER_ROWS = 5
 local MAX_NUMBER_COLS = 9
 
 
+local selected_items = {}
 function PPPBags_OnLoad(self)
 	self.Icon:SetTexture(133633)
 	self.Count:SetText(5)
 end
 
+function PPPBagsResetSelected()
+	selected_items = {}
+	PPPGotoBagsPage()
+end
+
 local current_bags_page = 1
-function PPPGotoBagsPage()
-	PPPUpdateInventory()
-	
+local function GetCurrentIndex(row,col)
+	return (((row*MAX_NUMBER_COLS)-MAX_NUMBER_COLS)+col)+(((MAX_NUMBER_COLS*MAX_NUMBER_ROWS)*current_bags_page)-(MAX_NUMBER_COLS*MAX_NUMBER_ROWS))
+end
+
+local function GetOrderedBag()
 	local ordered_bag = {}
 	for k,v in pairs(PPPCurrentBag) do
 		if v>0 then
 			ordered_bag[#ordered_bag+1]=k
 		end
 	end
+	return ordered_bag
+end
+
+local function CheckIfInSelectedItems(item_id)
+	for k,v in pairs(selected_items) do
+		if v == item_id then
+			return k
+		end
+	end
+	return nil
+end
+
+function PPPBagsItem_OnClick(self)
+	local location_string = string.sub(self:GetName(), -2)
+	local row = string.sub(location_string,1,1)
+	local col = string.sub(location_string,-1)
+	
+	local current_index = GetCurrentIndex(row,col)
+	local ordered_bag = GetOrderedBag()
+	
+	if ordered_bag[current_index] then
+		local already_index = CheckIfInSelectedItems(ordered_bag[current_index])
+		if not already_index then
+			PPPBaseFrameBagsFrameMainResetSelected:Enable()
+			selected_items[#selected_items+1] = ordered_bag[current_index]
+		else
+			table.remove(selected_items,already_index)
+			if #selected_items <= 0 then
+				PPPBaseFrameBagsFrameMainResetSelected:Disable()
+			end
+		end
+		
+		PPPGotoBagsPage()
+	end
+	
+end
+
+function PPPGotoBagsPage()
+	PPPUpdateInventory()
+	
+	local ordered_bag = GetOrderedBag()
 
 	PPPBottomBarButtons("PPPBaseFrameBagsFrameMain", current_bags_page, #ordered_bag/(MAX_NUMBER_ROWS*MAX_NUMBER_COLS))
 	
@@ -26,11 +75,18 @@ function PPPGotoBagsPage()
 		PPPBaseFrameBagsFrameMainResetBag:Hide()
 	end
 	
+	if #selected_items == 0 then
+		PPPBaseFrameBagsFrameMainResetSelected:Disable()
+	else
+		PPPBaseFrameBagsFrameMainResetSelected:Enable()
+	end
+	
+	local selected_profits = 0
 	for i=1,MAX_NUMBER_ROWS do
 		for j=1,MAX_NUMBER_COLS do
 		
 			-- offset
-			local current_index = (((i*MAX_NUMBER_COLS)-MAX_NUMBER_COLS)+j)+(((MAX_NUMBER_COLS*MAX_NUMBER_ROWS)*current_bags_page)-(MAX_NUMBER_COLS*MAX_NUMBER_ROWS))
+			local current_index = GetCurrentIndex(i,j)
 			local current_id = ordered_bag[current_index]
 			
 			local frame = _G["PPPBaseFrameBagsFrameMainRow"..i..j]
@@ -57,10 +113,25 @@ function PPPGotoBagsPage()
 					frame.EmptyBackground:Hide()
 					--frame:SetNormalTexture(current_table[current_id].file)
 					frame.Icon:SetTexture(current_table[current_id].file)
-					frame:SetText(current_table[current_id].name)
+					local tooltip_text = current_table[current_id].name
+					if PPPAuctionHistory.items[current_id] then
+						tooltip_text = tooltip_text .. "\n" .. PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[current_id]))
+					end
+					frame:SetText(tooltip_text)
+					
+					if CheckIfInSelectedItems(current_id) then
+						if selected_profits and PPPAuctionHistory.items[current_id] then
+							selected_profits = selected_profits + (PPPCostPerUnit(PPPAuctionHistory.items[current_id])*PPPCurrentBag[current_id])
+						else
+							selected_profits=nil
+						end
+						frame.IconPressed:Show()
+					else
+						frame.IconPressed:Hide()
+					end
 				else
 					if frame.Count:GetText()~=""then
-						frame.Count:SetText("")
+						frame.Count:SetText(nil)
 					end
 					--frame.EmptyBackground:Show()
 					--frame:SetNormalTexture("Interface\\AuctionFrame\\AuctionHouse\\auctionhouse-itemicon-empty")
@@ -69,6 +140,15 @@ function PPPGotoBagsPage()
 				print("[PlantProfitPredictor] Could not locate frame PPPBaseFrameBagsFrameMainRow" .. i .. j)
 			end
 		end
+	end
+	
+	local base_frame = PPPBaseFrameBagsFrameMain
+	if base_frame then
+		if selected_profits then
+			base_frame.SelectedProfits:SetText("Estimated profits from selected: " ..PPPGetFormattedGoldString(selected_profits))
+		end
+	else
+		print("[PlantProfitPredictor] Could not locate frame PPPBaseFrameBagsFrameMain")
 	end
 end
 

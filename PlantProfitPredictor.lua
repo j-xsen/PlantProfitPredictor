@@ -399,8 +399,9 @@ function PPPButtonTemplate_OnLeave(self)
 	end
 end
 
-local first_query = false
+PPPFirstQuery = false
 local delayed_yet = false
+PPPAHOpen = false
 local milled_waited_for_delay_yet = false
 -- PPPAuctionHistory = { 
 function PPPEventHandler(self, event, arg1, arg2, arg3)
@@ -439,18 +440,18 @@ function PPPEventHandler(self, event, arg1, arg2, arg3)
 		PPPMillingLootClosed()
 	elseif event == "AUCTION_HOUSE_SHOW" then
 		-- scan auction house
-		print("[PlantProfitPredictor] Scanning Auction House if possible!")
-		C_AuctionHouse.ReplicateItems()
-		first_query = true		
+		-- C_AuctionHouse.ReplicateItems()
+		-- first_query = true
+		PPPAHOpen = true
 	elseif event == "REPLICATE_ITEM_LIST_UPDATE" then
 		-- list update
-		if first_query then
+		if PPPFirstQuery then
 			-- first time AH data updated
 			--print(C_AuctionHouse.GetNumReplicateItems())
 			print("[PlantProfitPredictor] Updating PPPAuctionHistory!")
 			ScanNewAHList()
 		end
-		first_query = false
+		PPPFirstQuery = false
 	end
 end
 
@@ -461,12 +462,22 @@ function PlantProfitPredictor_OnLoad()
 	PPPBaseFrame:RegisterEvent("BAG_UPDATE_DELAYED")
 	PPPBaseFrame:RegisterEvent("LOOT_CLOSED")
 	PPPBaseFrame:RegisterEvent("AUCTION_HOUSE_SHOW")
+	PPPBaseFrame:RegisterEvent("AUCTION_HOUSE_CLOSED")
 	PPPBaseFrame:RegisterEvent("REPLICATE_ITEM_LIST_UPDATE")
 	PPPBaseFrame:SetScript("OnEvent", PPPEventHandler)
 end
 
 local function PlantProfitPredictor_SlashCommand(msg, editbox)
-	ToggleFrame();
+	if msg=="scan" then
+		if PPPAHOpen then
+			C_AuctionHouse.ReplicateItems()
+			PPPFirstQuery = true
+		else
+			print("[PlantProfitPredictor] The Auction House must be open to scan it!")
+		end
+	elseif msg=="" then
+		ToggleFrame();
+	end
 end
 
 SLASH_PPP1 = "/ppp";
