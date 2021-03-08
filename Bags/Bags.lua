@@ -75,6 +75,13 @@ function PPPGotoBagsPage()
 		PPPBaseFrameBagsFrameMainResetBag:Hide()
 	end
 	
+	-- make sure all selected still exist
+	for k,v in pairs(selected_items) do
+		if not PPPCurrentBag[v] or PPPCurrentBag[v] <= 0 then
+			table.remove(selected_items,k)
+		end
+	end
+	
 	if #selected_items == 0 then
 		PPPBaseFrameBagsFrameMainResetSelected:Disable()
 	else
@@ -109,9 +116,13 @@ function PPPGotoBagsPage()
 						print("[PlantProfitPredictor] Could not locate a current_table for ID " .. current_id)
 					end
 					
-					frame.Count:SetText(PPPCurrentBag[current_id])
-					frame.EmptyBackground:Hide()
+					if PPPCurrentBag[current_id] % 1 ~= 0 then
+						frame.Count:SetText(string.format("%.1f",PPPCurrentBag[current_id]))
+					else
+						frame.Count:SetText(PPPCurrentBag[current_id])
+					end
 					--frame:SetNormalTexture(current_table[current_id].file)
+					frame.Icon:Show()
 					frame.Icon:SetTexture(current_table[current_id].file)
 					local tooltip_text = current_table[current_id].name
 					if PPPAuctionHistory.items[current_id] then
@@ -133,6 +144,8 @@ function PPPGotoBagsPage()
 					if frame.Count:GetText()~=""then
 						frame.Count:SetText(nil)
 					end
+					frame.Icon:Hide()
+					frame.IconPressed:Hide()
 					--frame.EmptyBackground:Show()
 					--frame:SetNormalTexture("Interface\\AuctionFrame\\AuctionHouse\\auctionhouse-itemicon-empty")
 				end
@@ -159,4 +172,10 @@ function PPPBagsChangePage(direction)
 	else
 		print("[PlantProfitPredictor] Invalid direction " .. direction)
 	end
+end
+
+function PPPBagsResetBag()
+	PPPEditedBag = false
+	PPPUpdateInventory()
+	PPPGotoBagsPage()
 end

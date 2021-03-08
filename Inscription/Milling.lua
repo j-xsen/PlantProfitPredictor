@@ -85,6 +85,7 @@ function PPPUpdatePlantCountFrame()
 				
 				local estimated_pigment_profit = 0
 				local estimated_ink_profit = 0
+				local objs_table = {{id=CurrentPlants[i],amount=-5}}
 				-- set texture and text of pigment buttons
 				for j=1,#PPPPlants[CurrentPlants[i]].pigments do
 					if j<=MAX_NUMBER_PIGMENTS then
@@ -136,6 +137,7 @@ function PPPUpdatePlantCountFrame()
 										pigment_frame:SetText(pigment_frame:GetText() .. "\n\n|cffffff00Estimated profits as Inks:\n"..PPPGetFormattedGoldString(estimated_i_profit))
 									end
 								end
+								table.insert(objs_table,{id=PPPPlants[CurrentPlants[i]].pigments[j],amount=estimation_per_milling})
 								_G[pigment_frame_name .. "Count"]:SetText(string.format("%.1f",estimation_per_milling*possible_millings))
 								_G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:SetText(current_text .. ": " .. string.format("%.1f",estimation_per_milling))
 							else
@@ -152,6 +154,37 @@ function PPPUpdatePlantCountFrame()
 						print("[PlantProfitPredictor] Too many pigments!")
 					end
 				end
+				_G["PPPBaseFrameMillingFrameMainPlant"..i.."Arrow"]:RegisterForClicks("AnyUp")
+				_G["PPPBaseFrameMillingFrameMainPlant"..i.."Arrow"]:SetScript("OnClick", function(self,button,down)
+					local opposite_table = {}
+					for k,v in pairs(objs_table) do
+						table.insert(opposite_table,{id=v.id,amount=-v.amount})
+					end
+					if button=="LeftButton" then
+						if IsShiftKeyDown() then
+							for i=1,possible_millings do
+								PPPEditBag(objs_table)
+							end
+							PPPUpdatePlantCountFrame()
+						else
+							if PPPEditBag(objs_table) then
+								PPPUpdatePlantCountFrame()
+							end
+						end
+					elseif button=="RightButton" then
+						if IsShiftKeyDown() then
+							while PPPEditBag(opposite_table) do
+								PPPEditBag(opposite_table)
+							end
+							PPPUpdatePlantCountFrame()
+						else
+							if PPPEditBag(opposite_table) then
+								PPPUpdatePlantCountFrame()
+							end
+						end
+					end
+				end)
+				
 				local current_text = _G["PPPBaseFrameMillingFrameMainPlant" .. i .. "Arrow"]:GetText()
 				local additional_text = "|r\n\n|cffffff00Estimated profits from Pigments:|r\n|cffffffff" .. PPPGetFormattedGoldString(estimated_pigment_profit) .. "|r"..
 				                        "|r\n\n|cffffff00Estimated profits from Inks:|r\n|cffffffff" .. PPPGetFormattedGoldString(estimated_ink_profit).."|r"

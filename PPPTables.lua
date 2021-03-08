@@ -102,6 +102,7 @@ PPPMillingSpells = {
 
 -- ALL THE ALCHEMY CREATIONS --
 PPPAlchemyCreations = {
+	-- flasks
 	[171276] = {
 		name = "Spectral Flask of Power",
 		tech_name = "SpectralFlaskOfPower",
@@ -114,14 +115,6 @@ PPPAlchemyCreations = {
 			[170554] = 4
 		}
 	},
-	[171273] = {
-		name = "Potion of Spectral Intellect",
-		tech_name = "PotionOfSpectralIntellect",
-		file=3566836,
-		ingredients = {
-			[168589] = 5
-		}
-	},
 	[171278] = {
 		name="Spectral Flask of Stamina",
 		tech_name="SpectralFlaskOfStamina",
@@ -131,6 +124,82 @@ PPPAlchemyCreations = {
 			[168586] = 3,
 			[168589] = 3,
 		},
+	},
+	
+	-- oils and extracts
+	[171285] = {
+		name="Shadowcore Oil",
+		tech_name="ShadowcoreOil",
+		file=463543,
+		ingredients={
+			[169701] = 2
+		}
+	},
+	[171286] = {
+		name="Embalmer's Oil",
+		tech_name="EmbalmersOil",
+		file=463544,
+		ingredients={
+			[169701] = 2
+		}
+	},
+	[171289] = {
+		name="Ground Widowbloom",
+		tech_name="GroundWidowbloom",
+		file=3566853,
+		ingredients={
+			[168583] = 2
+		}
+	},
+	[171288] = {
+		name="Ground Vigil's Torch",
+		tech_name="GroundVigilsTorch",
+		file=3566852,
+		ingredients={
+			[170554]=2
+		}
+	},
+	[171292] = {
+		name="Ground Nightshade",
+		tech_name="GroundNightshade",
+		file=3566850,
+		ingredients={
+			[171315]=2
+		}
+	},
+	[171290] = {
+		name="Ground Marrowroot",
+		tech_name="GroundMarrowroot",
+		file=3566856,
+		ingredients={
+			[168589]=2
+		}
+	},
+	[171291] = {
+		name="Ground Rising Glory",
+		tech_name="GroundRisingGlory",
+		file=3566857,
+		ingredients={
+			[168586]=2
+		}
+	},
+	[171287] = {
+		name="Ground Death Blossom",
+		tech_name="GroundDeathBlossom",
+		file=3566855,
+		ingredients={
+			[169701]=2
+		}
+	},
+	
+	-- combat potions
+	[171273] = {
+		name = "Potion of Spectral Intellect",
+		tech_name = "PotionOfSpectralIntellect",
+		file=3566836,
+		ingredients = {
+			[168589] = 5
+		}
 	},
 	[171270] = {
 		name="Potion of Spectral Agility",
@@ -147,9 +216,35 @@ PPPAlchemyCreations = {
 		ingredients={
 			[170554]=5
 		}
+	},
+	[171275] = {
+		name="Potion of Spectral Strength",
+		tech_name="PotionOfSpectralStrength",
+		file=3566838,
+		ingredients={
+			[168586] = 5
+		}
+	},
+	[171267]={
+		name="Spiritual Healing Potion",
+		tech_name="SpiritualHealingPotion",
+		file=3566860,
+		ingredients={
+			[169701] = 2
+		}
+	},
+	[171268]={
+		name="Spiritual Mana Potion",
+		tech_name="SpiritualManaPotion",
+		file=3566858,
+		ingredients={
+			[169701] = 2
+		}
 	}
 }
-PPPShadowlandsAlchemy = {171276, 171273,171278,171270,171274}
+PPPShadowlandsAlchemy = {171276,171278, -- flasks
+						 171285,171286,171289,171288,171292,171290,171291,171287, -- oils and extracts
+						 171273,171270,171274,171275,171267,171268} -- combat potions
 
 -- ALL THE INSCRIPTION CREATIONS --
 PPPInscriptionCreations = {
@@ -221,6 +316,32 @@ PPPInscriptionCreations = {
 			[173059]=3,
 			[173058]=3
 		}
+	},
+	[175970]={
+		name="Tranquil Ink",
+		tech_name="TranquilInk",
+		file=3716971,
+		ingredients={
+			[175788]=1
+		}
+	},
+	[173059]={
+		name="Luminous Ink",
+		tech_name="LuminousInk",
+		file=3716970,
+		ingredients={
+			[173057]=1
+		}
+	},
+	[173058]={
+		name="Umbral Ink",
+		tech_name="UmbralInk",
+		file=3716972,
+		ingredients={
+			[173056]=1
+		}
 	}
 }
-PPPShadowlandsInscription = {173067,173048,173049,173160,173161,173163,173162}
+PPPShadowlandsInscription = {173067,173048,173049,173160,173161,173163,173162,
+							 175970,173059,173058 -- inks
+							 }

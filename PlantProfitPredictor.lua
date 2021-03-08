@@ -36,15 +36,48 @@ function PPPFindXsInBag(list)
 end
 
 PPPEditedBag = false
-local function PPPEditBag(objs)
+function PPPEditBag(objs)
+	PPPEditedBag=true
+	local new_bag = PPPCurrentBag
+	local rtrn_value = true
+	local has_greater_than_zero = false
+	local has_lesser_than_zero = false
+	
+	-- check if all is valid before doing anything
 	for i=1,#objs do
-		PPPCurrentBag[objs[i].id]=PPPCurrentBag[objs[i].id]+objs[i].amount
+		-- ensure it is an exchange
+		if objs[i].amount > 0 then
+			has_greater_than_zero = true
+		elseif objs[i].amount < 0 then
+			has_lesser_than_zero = true
+		end
+		
+		if PPPCurrentBag[objs[i].id] then
+			-- item exists
+			if PPPCurrentBag[objs[i].id]+objs[i].amount<0 then
+				-- upon taking away amount, item would be negative
+				rtrn_value = false
+			end
+		elseif objs[i].amount <= 0 then
+			-- item does not exist and is supposed to take away amount
+			rtrn_value = false
+		end
 	end
+	
+	local has_non_zero = has_greater_than_zero and has_lesser_than_zero
+	
+	if has_non_zero and rtrn_value then
+		for i=1,#objs do
+			PPPCurrentBag[objs[i].id] = PPPCurrentBag[objs[i].id] + objs[i].amount
+		end
+	end
+	
+	return (rtrn_value and has_non_zero)
 end
 
 function PPPGetFormattedGoldString(starting)
 	if starting then
-		local copper = starting % 100
+		local copper = math.floor(starting % 100)
 		local silver = math.floor(starting/1e2) % 100
 		local gold = math.floor(starting/1e4)
 		if starting<0 then
@@ -204,17 +237,6 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 	
 	-- bottom bar stuff
 	PPPBottomBarButtons(frame_name, current_page, #current_table/max_number_creations)
-	-- if current_page == 1 then
-		-- _G[frame_name.."BottomBarButtonLeft"]:Disable()
-	-- else
-		-- _G[frame_name.."BottomBarButtonLeft"]:Enable()
-	-- end
-	-- if current_page>=#current_table/max_number_creations then
-		-- _G[frame_name.."BottomBarButtonRight"]:Disable()
-	-- else
-		-- _G[frame_name.."BottomBarButtonRight"]:Enable()
-	-- end
-	-- _G[frame_name.."BottomBarPageNumber"]:SetText(current_page)
 	
 	local offset = (current_page * max_number_creations) - max_number_creations
 	for i=1,max_number_creations do
@@ -271,18 +293,28 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 				local appended_arrow_text = ""
 				local total_alt_creation_cost = 0
 				local cost_for_one = 0
-				local cost_for_one_alt = 0
+				local objs_table = {{id=creation_id,amount=1}}
+				local current_ingredient_table
 				for k,v in pairs(creation_table.ingredients) do
+					table.insert(objs_table,{id=k,amount=-v})
+					
+					current_ingredient_table = nil
+					if PPPPlants[k] then
+						current_ingredient_table = PPPPlants
+					elseif PPPPigments[k] then
+						current_ingredient_table = PPPPigments
+					end
+					
 					-- add to arrow
 					if ah_all_ingredients_stored then
 						local ingredient_cost = PPPCostPerUnit(PPPAuctionHistory.items[k])*v
 						local required_amount = v-PPPCurrentBag[k]
 						
-						if PPPPlants[k] then
+						if current_ingredient_table then
 							if required_amount > 0 then
 								cost_for_one = cost_for_one + PPPCostPerUnit(PPPAuctionHistory.items[k])*(required_amount)
 							end
-							arrow_text = arrow_text .."\n".. PPPPlants[k].name .. ": " .. PPPGetFormattedGoldString(ingredient_cost)
+							arrow_text = arrow_text .."\n".. current_ingredient_table[k].name .. ": " .. PPPGetFormattedGoldString(ingredient_cost)
 						
 						elseif PPPInks[k] then
 							-- find cost_for_one
@@ -325,14 +357,14 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 						ingredient_frame = _G[ingredient_frame_name]
 						if ingredient_frame then
 							ingredient_frame:Show()
-							if PPPPlants[k] then
-								ingredient_frame:SetNormalTexture(PPPPlants[k].file)
-								ingredient_frame:SetText(PPPPlants[k].name .."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[k])).."\n|cffffffffTotal in bags: " .. PPPCurrentBag[k] .. "|r")
+							if current_ingredient_table then
+								ingredient_frame:SetNormalTexture(current_ingredient_table[k].file)
+								ingredient_frame:SetText(current_ingredient_table[k].name .."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[k])).."\n|cffffffffTotal in bags: " .. math.floor(PPPCurrentBag[k]) .. "|r")
 							elseif PPPInks[k] then
 								ingredient_frame:SetNormalTexture(PPPInks[k].file)
 								local pigment_id = PPPInks[k].pigment
-								ingredient_frame:SetText(PPPInks[k].name.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[k])).."\n|cffffffffTotal in bags: "..PPPCurrentBag[k] .."|r\n\n"..
-														 PPPPigments[pigment_id].name.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[pigment_id])).."\n|cffffffffTotal in bags: "..PPPCurrentBag[pigment_id])
+								ingredient_frame:SetText(PPPInks[k].name.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[k])).."\n|cffffffffTotal in bags: "..math.floor(PPPCurrentBag[k]) .."|r\n\n"..
+														 PPPPigments[pigment_id].name.."\n"..PPPGetFormattedGoldString(PPPCostPerUnit(PPPAuctionHistory.items[pigment_id])).."\n|cffffffffTotal in bags: "..math.floor(PPPCurrentBag[pigment_id]))
 							end
 							_G[ingredient_frame_name .. "Count"]:SetText(v)
 							_G[ingredient_frame_name .. "TimesCanCreate"]:SetText(can_create_with_this_ingredient)
@@ -344,10 +376,40 @@ function PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_t
 						print("[PlantProfitPredictor] I'm not equipped to handle that many ingredients!")
 					end
 				end
+				_G[index_frame_name.."Arrow"]:RegisterForClicks("AnyUp")
+				_G[index_frame_name.."Arrow"]:SetScript("OnClick", function(self,button,down)
+					local opposite_table = {}
+					for k,v in pairs(objs_table) do
+						table.insert(opposite_table,{id=v.id,amount=-v.amount})
+					end
+					if button=="LeftButton" then
+						if IsShiftKeyDown() then
+							while PPPEditBag(objs_table) do
+								PPPEditBag(objs_table)
+							end
+							PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_table)
+						else
+							if PPPEditBag(objs_table) then
+								PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_table)
+							end
+						end
+					elseif button=="RightButton" then
+						if IsShiftKeyDown() then
+							while PPPEditBag(opposite_table) do
+								PPPEditBag(opposite_table)
+							end
+							PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_table)
+						else
+							if PPPEditBag(opposite_table) then
+								PPPUpdateOffsetCreations(frame_name, current_page, current_table, all_table)
+							end
+						end
+					end
+				end)
 				arrow_text = arrow_text..appended_arrow_text
 				if valid_auction_house then
 					if ah_all_ingredients_stored then
-						if all_table == PPPInscriptionCreations then
+						if all_table == PPPInscriptionCreations and not current_ingredient_table then
 							arrow_text = arrow_text .. "\n\nTotal with Inks: " .. PPPGetFormattedGoldString(total_creation_cost)
 							arrow_text = arrow_text.."\nTotal with Pigments: "..PPPGetFormattedGoldString(total_alt_creation_cost)
 						else
@@ -416,7 +478,7 @@ function PPPEventHandler(self, event, arg1, arg2, arg3)
 			PPPAuctionHistory = {time_of_query=nil, items={}}
 		end
 		
-		if true then
+		if false then
 			PPPBaseFrame:Show()
 		end
 		

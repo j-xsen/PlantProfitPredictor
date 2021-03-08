@@ -154,6 +154,11 @@
 				<Anchors>
 					<Anchor point="BOTTOMRIGHT" x="-5" y="5"/>
 				</Anchors>
+				<Scripts>
+					<OnClick>
+						PPPBagsResetBag()
+					</OnClick>
+				</Scripts>
 			</Button>
 			<Button name="$parentResetSelected" inherits="PPPListButtonTemplate" text="Reset Selected" disabled="true" hidden="false">
 				<Size x="110" y="25"/>

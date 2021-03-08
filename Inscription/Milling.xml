@@ -7,7 +7,7 @@
 				<FontString name="$parentCount" inherits="GameFontNormal" text="0">
 					<Color r="1" g="1" b="1"/>
 					<Anchors>
-						<Anchor point="LEFT" relativePoint="RIGHT" x="3"/>
+						<Anchor point="LEFT" relativePoint="RIGHT" x="1"/>
 					</Anchors>
 				</FontString>
 			</Layer>
@@ -27,17 +27,17 @@
 			<!-- pigments -->			
 			<Button name="$parentPigmentButton1" inherits="PPPPigmentButton" id="1">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentArrow" relativePoint="RIGHT" x="80"/>
+					<Anchor point="LEFT" relativeTo="$parentArrow" relativePoint="RIGHT" x="65"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentPigmentButton2" inherits="PPPPigmentButton" id="2">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPigmentButton1" relativePoint="RIGHT" x="38"/>
+					<Anchor point="LEFT" relativeTo="$parentPigmentButton1" relativePoint="RIGHT" x="42"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentPigmentButton3" inherits="PPPPigmentButton" id="3">
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPigmentButton2" relativePoint="RIGHT" x="38"/>
+					<Anchor point="LEFT" relativeTo="$parentPigmentButton2" relativePoint="RIGHT" x="40"/>
 				</Anchors>
 			</Button>
 		</Frames>
