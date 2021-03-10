@@ -62,6 +62,14 @@ function PPPBagsItem_OnClick(self)
 	
 end
 
+local function TotalBagsProfit()
+	local current_profit = 0
+	for k,v in pairs(PPPCurrentBag) do
+		current_profit = current_profit + (PPPCostPerUnit(PPPAuctionHistory.items[k])*PPPCurrentBag[k])
+	end
+	return current_profit
+end
+
 function PPPGotoBagsPage()
 	PPPUpdateInventory()
 	
@@ -157,6 +165,7 @@ function PPPGotoBagsPage()
 	
 	local base_frame = PPPBaseFrameBagsFrameMain
 	if base_frame then
+		base_frame.TotalProfits:SetText("Estimated profits: " .. PPPGetFormattedGoldString(TotalBagsProfit()))
 		if selected_profits then
 			base_frame.SelectedProfits:SetText("Estimated profits from selected: " ..PPPGetFormattedGoldString(selected_profits))
 		end

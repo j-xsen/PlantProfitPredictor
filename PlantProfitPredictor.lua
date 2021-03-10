@@ -505,6 +505,10 @@ function PPPEventHandler(self, event, arg1, arg2, arg3)
 		-- C_AuctionHouse.ReplicateItems()
 		-- first_query = true
 		PPPAHOpen = true
+		print("[PlantProfitPredictor] Type '/ppp scan' to scan the Auction House!")
+		if PPPAuctionHistory.time_of_query then
+			print("[PlantProfitPredictor] Last query: " .. PPPAuctionHistory.time_of_query)
+		end
 	elseif event == "REPLICATE_ITEM_LIST_UPDATE" then
 		-- list update
 		if PPPFirstQuery then
@@ -532,6 +536,7 @@ end
 local function PlantProfitPredictor_SlashCommand(msg, editbox)
 	if msg=="scan" then
 		if PPPAHOpen then
+			print("[PlantProfitPredictor] Scanning the Auction House!")
 			C_AuctionHouse.ReplicateItems()
 			PPPFirstQuery = true
 		else
