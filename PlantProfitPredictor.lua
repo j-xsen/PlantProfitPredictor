@@ -481,9 +481,17 @@ function PPPEventHandler(self, event, arg1, arg2, arg3)
 			PPPAuctionHistory = {time_of_query=nil, items={}}
 		end
 		
+		
+		
+		
+		-- debug --
 		if false then
 			PPPBaseFrame:Show()
 		end
+		
+		
+		
+		
 		
 		if PPPBaseFrame:IsVisible() then
 			PPPUpdatePlantCountFrame() -- run this in case client starts with window open & code ran before saved variables loaded

@@ -91,7 +91,7 @@
 			<Button name="$parentPigmentButton1" inherits="PPPPigmentButton" id="1">
 				<Size x="20" y="20"/>
 				<Anchors>
-					<Anchor point="LEFT" relativeTo="$parentPlantButton" relativePoint="RIGHT" x="280"/>
+					<Anchor point="LEFT" relativeTo="$parentPlantButton" relativePoint="RIGHT" x="260"/>
 				</Anchors>
 			</Button>
 			<Button name="$parentPigmentButton2" inherits="PPPPigmentButton" id="2">
@@ -105,6 +105,17 @@
 				<Anchors>
 					<Anchor point="LEFT" relativeTo="$parentPigmentButton2" relativePoint="RIGHT" x="35"/>
 				</Anchors>
+			</Button>
+			<Button name="$parentDeleteListing" inherits="PPPListButtonTemplate" text="X" hidden="false">
+				<Size x="25" y="25"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parentPigmentButton3" relativePoint="TOPRIGHT" y="3" x="25"/>
+				</Anchors>
+				<Scripts>
+					<OnClick>
+						PPPRemoveListing(self)
+					</OnClick>
+				</Scripts>
 			</Button>
 		</Frames>
 	</Button>
@@ -144,58 +155,58 @@
 	<!-- log frame -->
 	<Frame name="PPPMillingFrameLogTemplate" inherits="PPPInnerTabTemplate" virtual="true">
 		<Frames>
-			<Frame name="$parentEntry1" inherits="PPPMillingLogTemplate" id="1"/>
-			<Button name="$parentEntry2" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry1" inherits="PPPMillingLogTemplate" id="1"/>
+			<Button name="$parentEntry2" inherits="PPPMillingLogTemplate" id="2">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry1" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry3" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry3" inherits="PPPMillingLogTemplate" id="3">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry2" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry4" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry4" inherits="PPPMillingLogTemplate" id="4">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry3" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry5" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry5" inherits="PPPMillingLogTemplate" id="5">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry4" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry6" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry6" inherits="PPPMillingLogTemplate" id="6">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry5" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry7" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry7" inherits="PPPMillingLogTemplate" id="7">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry6" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry8" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry8" inherits="PPPMillingLogTemplate" id="8">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry7" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry9" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry9" inherits="PPPMillingLogTemplate" id="9">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry8" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry10" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry10" inherits="PPPMillingLogTemplate" id="10">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry9" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry11" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry11" inherits="PPPMillingLogTemplate" id="11">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry10" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
 			</Button>
-			<Button name="$parentEntry12" inherits="PPPMillingLogTemplate" id="1">
+			<Button name="$parentEntry12" inherits="PPPMillingLogTemplate" id="12">
 				<Anchors>
 					<Anchor relativeTo="$parentEntry11" relativePoint="BOTTOMLEFT" name="TOPLEFT" y="-7"/>
 				</Anchors>
@@ -203,7 +214,7 @@
 			<ScrollFrame name="$parentScrollFrame" inherits="FauxScrollFrameTemplate" setAllPoints="true">
 				<Anchors>
 					<Anchor point="TOPLEFT"/>
-					<Anchor point="BOTTOMRIGHT" x="-30" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-27" y="0"/>
 				</Anchors>
 				<Scripts>
 					<OnVerticalScroll>

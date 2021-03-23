@@ -206,6 +206,12 @@ function PPPGotoPlantPage()
 	PPPUpdatePlantCountFrame()
 end
 
+function PPPRemoveListing(self)
+	local lineplusoffset = self:GetParent():GetID() + FauxScrollFrame_GetOffset(PPPBaseFrameMillingFrameLogScrollFrame)
+	table.remove(PPPMillingHistory, lineplusoffset)
+	PPPScrollBarUpdate()
+end
+
 local milled_waited_for_delay_yet = false
 function PPPMillingSpellcast(spell_id)
 	if spell_id==51005 then
