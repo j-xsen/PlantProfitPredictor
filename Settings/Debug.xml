@@ -124,20 +124,6 @@
 					</OnClick>
 				</Scripts>
 			</Button>
-			<Button name="$parentReloadAHData" inherits="PPPButtonTemplate" text="Reload AH Data">
-				<Size x="25" y="25"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT" x="-7"/>
-				</Anchors>
-				<Scripts>
-					<OnLoad>
-						self:SetNormalTexture(135860)
-					</OnLoad>
-					<OnClick>
-						PPPDebugButtonScanNewAHList()
-					</OnClick>
-				</Scripts>
-			</Button>
 		</Frames>
 		<Layers>
 			<Layer name="OVERLAY">

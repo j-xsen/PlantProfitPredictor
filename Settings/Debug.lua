@@ -156,7 +156,3 @@ function PPPGotoDebugPage()
 	end
 	PPPBaseFrameSettingsFrameDebugSavedItemsCount:SetText("Number of items stored in PPPAuctionHistory: " .. count_of_found_items)
 end
-
-function PPPDebugButtonScanNewAHList()
-	ScanNewAHList()
-end
