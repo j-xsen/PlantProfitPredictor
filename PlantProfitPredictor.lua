@@ -127,12 +127,14 @@ function PPPUpdateInventory()
 							PPPCurrentMillingInfo.output[PPPPlants[id].pigments[i]] = 0
 						end
 					end
-				else
-					if PPPCurrentMillingInfo.id ~= nil then
-						for k,v in pairs(PPPCurrentMillingInfo.output) do
-							if id == k then
-								PPPCurrentMillingInfo.output[id] = count - last_bag[id]
-							end
+				end
+				for k,v in pairs(PPPCurrentMillingInfo.output) do
+					if id == k then
+						local difference = count - last_bag[id]
+						if difference > 0 or difference == int(difference) then
+							PPPCurrentMillingInfo.output[id] = count - last_bag[id]
+						else
+							print("[PlantProfitPredictor] Invalid count - last_bag[id] (" .. count .. " - " .. last_bag[id] .. ")!")
 						end
 					end
 				end
@@ -156,7 +158,8 @@ local function ToggleFrame()
 	if PPPBaseFrame:IsVisible() then
 		PPPBaseFrame:Hide()
 	else
-		PPPUpdatePlantCountFrame()
+		_G[PPPLineTabs[PPPCurrentTab].func]()
+		
 		PPPBaseFrame:Show()
 	end
 end
